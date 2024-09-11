@@ -11,19 +11,14 @@ const routes = [
     path: "/app",
     name: "App",
     component: () => import("@/components/ApplicationComponent.vue"),
-    meta: { requiresAuth: true, requiresSubscription: true },
-  },
-  {
-    path: "/subscribe",
-    name: "Subscribe",
-    component: () => import("@/components/SubscribeComponent.vue"),
-    // meta: { requiresAuth: true },
-  },
-  {
-    path: "/verifying-payment",
-    name: "VerifyingPayment",
-    component: () => import("@/components/VerifyingPaymentComponent.vue"),
     meta: { requiresAuth: true },
+    beforeEnter: async (to, from, next) => {
+      const userStore = useUserStore();
+      if (!userStore.backendUserDataFetched) {
+        await userStore.fetchBackendUserData();
+      }
+      next();
+    },
   },
 ];
 
@@ -44,11 +39,6 @@ router.beforeEach(async (to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!userStore.isAuthenticated) {
       next({ name: "LandingPage" });
-    } else if (
-      to.matched.some((record) => record.meta.requiresSubscription) &&
-      !userStore.isSubscribed
-    ) {
-      next({ name: "Subscribe" });
     } else {
       next();
     }

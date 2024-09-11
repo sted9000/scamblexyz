@@ -1,50 +1,15 @@
 import { defineStore } from "pinia";
-import {
-  getCurrentUser,
-  signOut,
-  signInWithRedirect,
-  fetchAuthSession,
-} from "aws-amplify/auth";
-import axios from "axios";
-import router from "@/router";
-
-// Helper function to make authenticated API calls
-const authenticatedApiCall = async (method, path, data = null) => {
-  const baseUrl = `https://${process.env.VUE_APP_CLOUDFRONTAPIORIGINDOMAINNAME}/${process.env.VUE_APP_APIGATEWAYDEPLOYEDSTAGENAME}`;
-  const { tokens } = await fetchAuthSession();
-  const idToken = tokens.idToken.toString();
-  console.log(`Making ${method} request to ${baseUrl}${path}`);
-  return axios({
-    method,
-    url: `${baseUrl}${path}`,
-    data,
-    headers: {
-      Authorization: `Bearer ${idToken}`,
-    },
-  });
-};
-
-// Helper function to handle errors
-const handleError = (error, customMessage) => {
-  console.error(customMessage, error);
-  if (axios.isAxiosError(error)) {
-    if (error.response) {
-      return `Server error: ${error.response.status} - ${error.response.data}`;
-    } else if (error.request) {
-      return "No response received from server";
-    } else {
-      return "Error setting up the request";
-    }
-  } else {
-    return "An unexpected error occurred";
-  }
-};
+import { getCurrentUser, signOut, signInWithRedirect } from "aws-amplify/auth";
+import { authenticatedApiCall, handleError } from "@/apiService";
+import { sites as localSites } from "@/constants";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
     user: null,
+    sites: [],
     isAuthenticated: false,
     isLoading: true,
+    isLoggingOut: false,
     backendUserData: null,
     backendUserDataFetched: false,
     error: null,
@@ -52,15 +17,37 @@ export const useUserStore = defineStore("user", {
 
   getters: {
     // Add any getters you need
-    isSubscribed: (state) => {
-      return state.backendUserData?.subscribed ?? false;
+    // isSubscribed: (state) => {
+    //   return state.backendUserData?.subscribed ?? false;
+    // },
+    getSites: (state) => {
+      return state.sites ?? [];
+    },
+    getIsLoading: (state) => {
+      return state.initialLoad;
+    },
+    getIsLoggingOut: (state) => {
+      return state.isLoggingOut;
+    },
+    enabledSites: (state) => {
+      return (state.sites ?? []).filter((site) => site.enabled);
+    },
+    userScore: (state) => {
+      return state.backendUserData?.score ?? 0;
+    },
+    userRank: (state) => {
+      return state.backendUserData?.rank ?? 0;
+    },
+    userIcon: (state) => {
+      return state.backendUserData?.icon ?? "user";
+    },
+    userName: (state) => {
+      return state.backendUserData?.username ?? "User";
     },
   },
 
   actions: {
     async checkUser() {
-      console.log("Checking user...");
-      this.isLoading = true;
       this.error = null;
       try {
         const user = await getCurrentUser();
@@ -74,6 +61,7 @@ export const useUserStore = defineStore("user", {
         this.isAuthenticated = false;
         this.backendUserData = null;
         this.error = "Failed to authenticate user";
+        console.error("Failed to authenticate user:", error);
       } finally {
         this.isLoading = false;
       }
@@ -93,6 +81,7 @@ export const useUserStore = defineStore("user", {
 
     async signOut() {
       try {
+        this.isLoggingOut = true;
         await signOut();
         this.user = null;
         this.isAuthenticated = false;
@@ -105,96 +94,88 @@ export const useUserStore = defineStore("user", {
       }
     },
 
+    async updateUserSite(item) {
+      if (!this.isAuthenticated) {
+        console.error("User is not authenticated");
+        this.error = "User is not authenticated";
+        return;
+      }
+      try {
+        const response = await authenticatedApiCall("put", "/user", item);
+        // update the site in the state 'sites' array
+        console.log("Response data:", response.data);
+        const siteIndex = this.sites.findIndex((site) => site.SK === item.SK);
+        console.log("Site index:", siteIndex);
+        this.sites[siteIndex] = {
+          ...response.data.site,
+          ...localSites[item.SK],
+        };
+        this.backendUserData.score = response.data.score;
+        console.log("Updated sites data:", this.sites);
+
+        this.error = null;
+      } catch (error) {
+        this.error = handleError(error, "Failed to $ user site:");
+      }
+    },
+
+    async updateEnabledSites(changedSites) {
+      // API call to update sites
+      await authenticatedApiCall("PATCH", "/site", changedSites);
+      // Update local state
+      this.sites = this.sites.map((site) => {
+        if (site.SK in changedSites) {
+          return { ...site, enabled: changedSites[site.SK] };
+        }
+        return site;
+      });
+    },
+
     async fetchBackendUserData() {
       if (!this.isAuthenticated) {
         console.error("User is not authenticated");
         this.error = "User is not authenticated";
         return;
       }
-
+      this.initialLoad = true;
       try {
-        const response = await authenticatedApiCall("get", "/user");
-        this.backendUserData = response.data;
-        this.backendDataFetched = true;
-        console.log("Backend user data:", this.backendUserData);
+        const response = await authenticatedApiCall("GET", "/user");
+        this.backendUserData = response.data.user;
+        console.log("SITES:", response.data.sites);
+        let fetchedSites = response.data.sites;
+        fetchedSites = fetchedSites.map((site) => {
+          return { ...site, ...localSites[site.SK] };
+        });
+        this.sites = fetchedSites;
+        this.backendUserDataFetched = true;
         this.error = null;
       } catch (error) {
         this.error = handleError(error, "Failed to fetch backend user data:");
+      } finally {
+        this.initialLoad = false;
+        this.isLoading = false;
+      }
+    },
+
+    async setEditProfile(body) {
+      if (!this.isAuthenticated) {
+        console.error("User is not authenticated");
+        this.error = "User is not authenticated";
+        return;
+      }
+      try {
+        console.log("Body:", body);
+        const response = await authenticatedApiCall("PATCH", "/user", body);
+        this.backendUserData = response.data;
+        this.error = null;
+      } catch (error) {
+        this.error = handleError(error, "Failed to update user profile:");
       }
     },
 
     async refreshBackendUserData() {
       this.backendDataFetched = false;
       await this.fetchBackendUserData();
-    },
-
-    async subscribeFreeUser() {
-      if (!this.isAuthenticated) {
-        console.error("User is not authenticated");
-        this.error = "User is not authenticated";
-        return;
-      }
-
-      try {
-        const response = await authenticatedApiCall("put", "/user");
-        const { updatedUser } = response.data;
-        console.log("Updated user:", updatedUser);
-        this.backendUserData = updatedUser;
-        router.push("/app");
-        console.log("Backend user data:", this.backendUserData);
-        this.error = null;
-      } catch (error) {
-        this.error = handleError(error, "Failed to subscribe free user:");
-      }
-    },
-
-    async subscribePremiumUser() {
-      if (!this.isAuthenticated) {
-        console.error("User is not authenticated");
-        this.error = "User is not authenticated";
-        return;
-      }
-
-      // first get the checkout session URL from my backend
-      const response = await authenticatedApiCall(
-        "post",
-        "/stripe/create-session"
-      );
-      const { sessionUrl } = response.data;
-      console.log("Checkout session URL:", sessionUrl);
-      // then redirect the user to this URL to complete the subscription
-      window.location.href = sessionUrl;
-    },
-
-    async veryifySubscription() {
-      // Polling the backend to verify the subscription status
-      if (!this.isAuthenticated) {
-        this.error = "User is not authenticated";
-        return;
-      }
-      try {
-        let retries = 0;
-        let isSubscribed = false;
-        while (retries < 5) {
-          const response = await authenticatedApiCall(
-            "post",
-            "/stripe/verify-subscription"
-          );
-          isSubscribed = response.data.subscribed;
-          if (isSubscribed) {
-            console.log("User is subscribed");
-            this.backendUserData = response.data;
-            this.error = null;
-            return;
-          }
-          retries++;
-          await new Promise((resolve) => setTimeout(resolve, 5000));
-        }
-        console.log("User is not subscribed");
-        this.error = "User is not subscribed";
-      } catch (error) {
-        this.error = handleError(error, "Failed to verify subscription:");
-      }
     },
   },
 });

@@ -1,37 +1,83 @@
 <template>
-  <section class="bg-gray-50 py-12 sm:py-16 lg:py-20">
+  <section id="app-preview" class="bg-gray-50 py-12 sm:py-16 lg:py-20">
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="relative max-w-5xl mx-auto">
-        <div class="px-4 sm:px-0">
-          <div class="border-4 border-dashed border-gray-300 rounded-lg h-96 p-4">
-            <p class="text-center text-gray-500">App Preview Goes Here</p>
-          </div>
+      <div class="flex flex-col md:flex-row items-center gap-8">
+        <div class="w-full md:w-1/2">
+          <picture>
+            <source
+              media="(min-width: 1024px)"
+              :srcset="largeImage(props.firstImage.path)"
+            />
+            <source
+              media="(min-width: 640px)"
+              :srcset="mediumImage(props.firstImage.path)"
+            />
+            <img
+              :src="smallImage(props.firstImage.path)"
+              alt="App Preview"
+              class="w-full h-auto rounded-lg shadow-xl"
+            />
+          </picture>
         </div>
-<!--        <picture>-->
-<!--          <source media="(min-width: 1024px)" :srcset="props.largeImage">-->
-<!--          <source media="(min-width: 640px)" :srcset="props.mediumImage">-->
-<!--          <img :src="props.smallImage" alt="App Preview" class="w-full h-auto rounded-lg shadow-xl">-->
-<!--        </picture>-->
+        <div class="w-full md:w-1/2">
+          <h2 class="text-3xl font-bold mb-4">{{ props.firstImage.title }}</h2>
+          <p class="text-lg text-gray-600">
+            {{ props.firstImage.description }}
+          </p>
+        </div>
+      </div>
+      <div class="flex flex-col md:flex-row-reverse items-center gap-8 mt-12">
+        <div class="w-full md:w-1/2">
+          <picture>
+            <source
+              media="(min-width: 1024px)"
+              :srcset="largeImage(props.secondImage.path)"
+            />
+            <source
+              media="(min-width: 640px)"
+              :srcset="mediumImage(props.secondImage.path)"
+            />
+            <img
+              :src="smallImage(props.secondImage.path)"
+              alt="App Preview"
+              class="w-full h-auto rounded-lg shadow-xl"
+            />
+          </picture>
+        </div>
+        <div class="w-full md:w-1/2">
+          <h2 class="text-3xl font-bold mb-4">{{ props.secondImage.title }}</h2>
+          <p class="text-lg text-gray-600">
+            {{ props.secondImage.description }}
+          </p>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-// import { defineProps } from 'vue'
+import { defineProps } from "vue";
 
-// const props = defineProps({
-//   largeImage: {
-//     type: String,
-//     required: true
-//   },
-//   mediumImage: {
-//     type: String,
-//     required: true
-//   },
-//   smallImage: {
-//     type: String,
-//     required: true
-//   }
-// })
+const props = defineProps({
+  firstImage: {
+    type: Object,
+    required: true,
+  },
+  secondImage: {
+    type: Object,
+    required: true,
+  },
+});
+
+const largeImage = (path) => {
+  return path + "-lg.png";
+};
+
+const mediumImage = (path) => {
+  return path + "-md.png";
+};
+
+const smallImage = (path) => {
+  return path + "-sm.png";
+};
 </script>
