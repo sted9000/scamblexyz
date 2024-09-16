@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col min-h-screen bg-gray-50">
+  <div class="flex flex-col min-h-screen bg-gray-50 mb-10">
     <HeaderComponent />
     <main class="flex-grow flex items-center justify-center">
       <div

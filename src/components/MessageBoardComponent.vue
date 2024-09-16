@@ -1,8 +1,8 @@
 <template>
-  <div class="h-full flex flex-col w-full">
+  <div class="h-auto md:h-full flex flex-col w-full">
     <div class="py-4">
       <div class="flex justify-between items-center">
-        <div class="flex space-x-2">
+        <div class="hidden md:flex space-x-2">
           <button
             @click="filterPosts('all')"
             :class="[
@@ -48,6 +48,8 @@
             Other
           </button>
         </div>
+        <h2 class="text-xl font-semibold md:hidden">Message Board</h2>
+        <div class="flex-grow md:flex-grow-0"></div>
         <button
           @click="handleCreateNewPost"
           class="px-3 py-1 rounded border text-sm bg-green-500 text-white hover:bg-green-600 transition-colors duration-200 flex items-center"
@@ -70,7 +72,7 @@
         </button>
       </div>
     </div>
-    <div v-if="posts" class="flex-grow overflow-y-auto">
+    <div v-if="posts" class="flex-grow md:overflow-y-auto">
       <div v-if="filteredPosts.length > 0" class="space-y-4">
         <MessageBoardPost
           v-for="post in filteredPosts"

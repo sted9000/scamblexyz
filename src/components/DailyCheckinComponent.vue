@@ -54,6 +54,8 @@
         </div>
       </div>
     </div>
+
+    <!-- Content Body of the Checkin -->
     <section
       class="bg-gray-100 rounded-b-lg shadow-md overflow-y-auto"
       style="height: calc(100% - 70px)"

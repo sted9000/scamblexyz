@@ -55,7 +55,7 @@
       </button>
       <button
         @click="handleGoogleAuth"
-        class="w-full text-left mt-2 md:mt-0 px-4 py-2 text-sm font-medium rounded-md text-white animated-button focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 whitespace-nowrap"
+        class="hidden md:block w-full text-left mt-2 md:mt-0 px-4 py-2 text-sm font-medium rounded-md text-white animated-button focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 whitespace-nowrap"
       >
         Sign up
       </button>

@@ -1,18 +1,22 @@
 <template>
-  <div
-    class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full h-screen flex flex-col"
-  >
-    <div class="relative max-w-5xl mx-auto flex-grow flex flex-col w-full">
-      <YourScoreComponent />
-      <ScrollingTickerComponent />
-      <div class="flex flex-col lg:flex-row flex-grow">
-        <div
-          class="w-full lg:w-1/2 mb-4 lg:mb-0 lg:pr-3 h-[75vh] overflow-hidden"
-        >
-          <DailyCheckinComponent />
-        </div>
-        <div class="w-full lg:w-1/2 lg:pl-3 h-[75vh] overflow-hidden">
-          <MessageBoardComponent />
+  <div class="min-h-screen flex flex-col">
+    <div class="flex-grow">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col">
+        <div class="relative max-w-5xl mx-auto flex-grow flex flex-col w-full">
+          <YourScoreComponent />
+          <ScrollingTickerComponent />
+          <div class="flex flex-col lg:flex-row flex-grow">
+            <div
+              class="w-full lg:w-1/2 mb-4 lg:mb-0 lg:pr-3 h-[50vh] md:h-[75vh] overflow-hidden"
+            >
+              <DailyCheckinComponent />
+            </div>
+            <div
+              class="w-full lg:w-1/2 lg:pl-3 h-auto lg:h-[75vh] overflow-visible lg:overflow-hidden"
+            >
+              <MessageBoardComponent />
+            </div>
+          </div>
         </div>
       </div>
     </div>
