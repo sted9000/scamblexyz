@@ -10,6 +10,7 @@
   "dependencies": {
     "@aws-amplify/auth": "^6.3.15",
     "@aws-amplify/ui-vue": "^4.2.11",
+    "@observablehq/plot": "^0.6.16",
     "aws-amplify": "^6.5.2",
     "axios": "^1.7.5",
     "core-js": "^3.8.3",

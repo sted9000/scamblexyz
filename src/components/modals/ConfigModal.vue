@@ -7,6 +7,7 @@
       class="bg-white rounded-lg p-8 max-w-sm w-full max-h-[75vh] overflow-y-auto"
     >
       <h2 class="text-2xl font-bold mb-4">Checkin Configuration</h2>
+      <p class="text-gray-600 mb-4">Enable the sites that you check in to</p>
       <div class="space-y-4">
         <div
           v-for="site in sites"

@@ -3,19 +3,20 @@ import { defineStore } from "pinia";
 export const useModalStore = defineStore("modal", {
   state: () => ({
     configModal: false,
-    streakModal: false,
     graphModal: false,
     leaderboardModal: false,
-    shareModal: false,
+    cardModal: false,
+    updateCardModal: false,
+    helpModal: false,
     createPostModal: false,
     editProfileModal: false,
+
+    // modal data
+    modalData: {},
   }),
   getters: {
     getConfigModal: (state) => {
       return state.configModal;
-    },
-    getStreakModal: (state) => {
-      return state.streakModal;
     },
     getGraphModal: (state) => {
       return state.graphModal;
@@ -23,8 +24,14 @@ export const useModalStore = defineStore("modal", {
     getLeaderboardModal: (state) => {
       return state.leaderboardModal;
     },
-    getShareModal: (state) => {
-      return state.shareModal;
+    getCardModal: (state) => {
+      return state.cardModal;
+    },
+    getUpdateCardModal: (state) => {
+      return state.updateCardModal;
+    },
+    getHelpModal: (state) => {
+      return state.helpModal;
     },
     getCreatePostModal: (state) => {
       return state.createPostModal;
@@ -32,13 +39,17 @@ export const useModalStore = defineStore("modal", {
     getEditProfileModal: (state) => {
       return state.editProfileModal;
     },
+    getModalData: (state) => {
+      return state.modalData;
+    },
     getModalOpen: (state) => {
       return (
         state.configModal ||
-        state.streakModal ||
         state.graphModal ||
         state.leaderboardModal ||
-        state.shareModal ||
+        state.cardModal ||
+        state.updateCardModal ||
+        state.helpModal ||
         state.createPostModal ||
         state.editProfileModal
       );
@@ -47,21 +58,20 @@ export const useModalStore = defineStore("modal", {
   actions: {
     setCloseAllModals() {
       this.configModal = false;
-      this.streakModal = false;
       this.graphModal = false;
       this.leaderboardModal = false;
-      this.shareModal = false;
+      this.cardModal = false;
+      this.updateCardModal = false;
+      this.helpModal = false;
       this.createPostModal = false;
       this.editProfileModal = false;
+      this.modalData = {};
     },
-    setOpenModal(modalName) {
+    setOpenModal(modalName, data) {
       this.setCloseAllModals();
       switch (modalName) {
         case "config":
           this.configModal = true;
-          break;
-        case "streak":
-          this.streakModal = true;
           break;
         case "graph":
           this.graphModal = true;
@@ -69,8 +79,15 @@ export const useModalStore = defineStore("modal", {
         case "leaderboard":
           this.leaderboardModal = true;
           break;
-        case "share":
-          this.shareModal = true;
+        case "card":
+          this.cardModal = true;
+          break;
+        case "updateCard":
+          this.updateCardModal = true;
+          this.modalData = data;
+          break;
+        case "help":
+          this.helpModal = true;
           break;
         case "createPost":
           this.createPostModal = true;

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-100 border border-gray-300 rounded p-3 mb-4">
+  <div class="bg-gray-50 border border-gray-300 rounded p-3 mb-4">
     <div class="flex items-start">
       <div class="flex flex-col items-center mr-4">
         <button
@@ -45,9 +45,6 @@
             }}
           </span>
           <span class="mr-4"> {{ post.comments.length }} Comments </span>
-          <span class="mr-4">
-            {{ siteCategory }}
-          </span>
         </div>
       </div>
     </div>
@@ -147,18 +144,6 @@ const truncatedContent = computed(() => {
   return props.post.Content.length > 100
     ? props.post.Content.slice(0, 100) + "..."
     : props.post.Content;
-});
-
-const siteCategory = computed(() => {
-  if (props.post.Category === "other") {
-    return "Other";
-  } else if (props.post.Category === "newSites") {
-    return "New Sites";
-  } else if (props.post.Category === "promos") {
-    return "Promos";
-  } else {
-    return "";
-  }
 });
 
 const toggleExpand = () => {

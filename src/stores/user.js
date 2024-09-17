@@ -29,6 +29,9 @@ export const useUserStore = defineStore("user", {
     getIsLoggingOut: (state) => {
       return state.isLoggingOut;
     },
+    getCardSites: (state) => {
+      return (state.sites ?? []).filter((site) => site.isCard);
+    },
     enabledSites: (state) => {
       return (state.sites ?? []).filter((site) => site.enabled);
     },
