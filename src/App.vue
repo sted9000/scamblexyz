@@ -14,13 +14,13 @@
         <router-view></router-view>
       </div>
     </main>
-    <FooterComponent />
+    <!-- <FooterComponent /> -->
   </div>
 </template>
 
 <script setup>
 import HeaderComponent from "./components/HeaderComponent.vue";
-import FooterComponent from "./components/FooterComponent.vue";
+// import FooterComponent from "./components/FooterComponent.vue";
 import { computed } from "vue";
 import { useUserStore } from "@/stores/user";
 

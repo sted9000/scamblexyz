@@ -22,7 +22,7 @@
           </svg>
         </button>
         <span class="text-sm font-bold text-gray-700">{{
-          post.UpvoteCount
+          localUpvoteCount
         }}</span>
       </div>
       <div class="flex-grow cursor-pointer" @click="toggleExpand">
@@ -71,9 +71,9 @@
                 />
               </svg>
             </button>
-            <span class="text-xs font-bold text-gray-700">{{
-              comment.UpvoteCount
-            }}</span>
+            <span class="text-xs font-bold text-gray-700">
+              {{ localCommentUpvoteCounts.get(comment.SK) }}
+            </span>
           </div>
           <div class="flex-grow">
             <p class="text-xs text-gray-500 mb-1">
@@ -105,7 +105,7 @@
 </template>
 
 <script setup>
-import { ref, computed, defineProps } from "vue";
+import { ref, computed, defineProps, reactive } from "vue";
 import { useBoardStore } from "@/stores/board";
 import { useUserStore } from "@/stores/user";
 const boardStore = useBoardStore();
@@ -150,15 +150,28 @@ const toggleExpand = () => {
   expanded.value = !expanded.value;
 };
 
+// Logic for updating the upvote count
+// Note that we update the local state
+// Then we update the store and the backend...
+// without updating the state in the store to...
+// avoid refiltering and moving the posts in the list
+const localUpvoteCount = ref(props.post.UpvoteCount);
+const localCommentUpvoteCounts = reactive(
+  new Map(
+    props.post.comments.map((comment) => [comment.SK, comment.UpvoteCount])
+  )
+);
 const upvote = () => {
+  localUpvoteCount.value++;
   boardStore.setUpdatePost({
     updateType: "upvote",
     PK: props.post.PK,
     SK: props.post.SK,
   });
 };
-
 const upvoteComment = (comment) => {
+  const currentCount = localCommentUpvoteCounts.get(comment.SK) || 0;
+  localCommentUpvoteCounts.set(comment.SK, currentCount + 1);
   boardStore.setUpdateComment({
     updateType: "upvote",
     PK: props.post.PK,

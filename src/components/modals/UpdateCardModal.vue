@@ -9,7 +9,7 @@
       <h2 class="text-2xl font-bold mb-4">Record Your Drop</h2>
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 mb-1">Site</label>
-        <div class="flex items-center text-lg font-semibold text-gray-400">
+        <div class="flex items-center text-lg font-semibold text-gray-700">
           <img
             :src="modalData.image"
             :alt="modalData.site"
@@ -22,8 +22,8 @@
         <label class="block text-sm font-medium text-gray-700 mb-1"
           >Previously Credited</label
         >
-        <div class="text-lg font-semibold text-gray-400">
-          {{ modalData.credited }} / {{ modalData.sent }}
+        <div class="text-lg font-semibold text-gray-700">
+          {{ modalData.DropCount }} / {{ modalData.SentCount }}
         </div>
       </div>
       <form @submit.prevent="submitPost" class="space-y-4">
@@ -58,9 +58,14 @@
             type="number"
             id="cardCount"
             v-model="cardCount"
+            :min="1"
+            :max="maxDropCount"
             required
             class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
           />
+          <p v-if="!isCardCountValid" class="text-red-500 text-sm mt-1">
+            Card count must be between 1 and {{ maxDropCount }}.
+          </p>
         </div>
 
         <div>
@@ -99,7 +104,8 @@
           </button>
           <button
             type="submit"
-            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            :disabled="!isCardCountValid"
+            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Submit
           </button>
@@ -112,27 +118,47 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useModalStore } from "@/stores/modal";
-import { useBoardStore } from "@/stores/board";
+import { useCardStore } from "@/stores/card";
+import { useUserStore } from "@/stores/user";
 const modalStore = useModalStore();
-const boardStore = useBoardStore();
-const cardCount = ref(0);
+const cardStore = useCardStore();
+const userStore = useUserStore();
 const dateCredited = ref(new Date().toISOString().substr(0, 10));
 const modalData = computed(() => modalStore.getModalData);
+const cardCount = ref(modalData.value.SentCount - modalData.value.DropCount);
 const allowAnonymizedData = ref(true);
+const userName = computed(() => userStore.userName);
+
+const maxDropCount = computed(
+  () => modalData.value.SentCount - modalData.value.DropCount
+);
+
+const isCardCountValid = computed(() => {
+  const count = Number(cardCount.value);
+  return count > 0 && count <= maxDropCount.value;
+});
 
 const closeModal = () => {
   modalStore.setCloseAllModals();
 };
 
+console.log("modal", modalData.value);
+
 const submitPost = () => {
-  const newPost = {
-    card: modalData,
-    cardsDropped: cardCount.value,
-    dateCredited: dateCredited.value,
-    allowAnonymizedData: allowAnonymizedData.value,
+  if (!isCardCountValid.value) return;
+
+  const drop = {
+    PK: modalData.value.PK,
+    SK: modalData.value.SK,
+    BatchId: modalData.value.BatchId,
+    SiteId: modalData.value.SiteId,
+    SentDate: modalData.value.DateSent,
+    dropCount: Number(cardCount.value),
+    dropDate: new Date(dateCredited.value).getTime(),
+    userName: userName.value,
   };
 
-  boardStore.addPost(newPost);
+  cardStore.addDrop(drop);
   closeModal();
 };
 </script>

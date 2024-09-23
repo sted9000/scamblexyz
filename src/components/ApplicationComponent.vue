@@ -1,29 +1,49 @@
 <template>
   <div class="min-h-screen flex flex-col">
     <div class="flex-grow">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col">
-        <!-- < class="relative max-w-5xl mx-auto flex-grow flex flex-col w-full"> -->
+      <div
+        class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col space-y-4"
+      >
         <YourScoreComponent />
         <ScrollingTickerComponent />
-        <div class="flex flex-col lg:flex-row flex-grow">
-          <div
-            class="w-full lg:w-1/2 mb-4 lg:mb-0 lg:pr-3 h-[50vh] md:h-[75vh] overflow-hidden"
-          >
+
+        <div
+          class="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4"
+        >
+          <!-- Daily Checkin -->
+          <div class="w-full lg:w-1/2 h-[50vh] md:h-[75vh] overflow-hidden">
             <DailyCheckinComponent />
           </div>
-          <div
-            class="w-full lg:w-1/2 lg:pl-3 h-auto lg:h-[75vh] overflow-visible lg:overflow-hidden"
-          >
+
+          <!-- Message Board -->
+          <div class="w-full lg:w-1/2 h-[50vh] md:h-[75vh] overflow-hidden">
             <MessageBoardComponent />
           </div>
         </div>
+
+        <!-- Streaks -->
         <div>
           <StreakComponent />
         </div>
-        <div>
-          <CommunityCardComponent />
+
+        <div
+          class="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4"
+        >
+          <!-- Community Card -->
+          <div class="w-full lg:w-1/2 h-[50vh] md:h-[75vh] overflow-hidden">
+            <CommunityCardComponent />
+          </div>
+
+          <!-- Recent Drops -->
+          <div class="w-full lg:w-1/2 h-[50vh] md:h-[75vh] overflow-hidden">
+            <RecentDropsComponent />
+          </div>
         </div>
-        <div><UserCardComponent /></div>
+
+        <!-- User Card -->
+        <div class="h-[50vh] md:h-[75vh] overflow-hidden">
+          <UserCardComponent />
+        </div>
       </div>
     </div>
 
@@ -48,31 +68,7 @@
           />
         </svg>
       </button>
-      <button
-        @click="modalStore.setOpenModal('config')"
-        class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-          />
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-          />
-        </svg>
-      </button>
+
       <button
         @click="modalStore.setOpenModal('help')"
         class="bg-purple-500 hover:bg-purple-600 text-white p-2 rounded-full"
@@ -116,6 +112,7 @@ import YourScoreComponent from "@/components/YourScoreComponent.vue";
 import ScrollingTickerComponent from "@/components/ScrollingTickerComponent.vue";
 import DailyCheckinComponent from "@/components/DailyCheckinComponent.vue";
 import MessageBoardComponent from "@/components/MessageBoardComponent.vue";
+import RecentDropsComponent from "@/components/RecentDropsComponent.vue";
 import StreakComponent from "@/components/StreakComponent.vue";
 import CommunityCardComponent from "@/components/CommunityCardComponent.vue";
 import UserCardComponent from "@/components/UserCardComponent.vue";

@@ -60,12 +60,11 @@ export const useBoardStore = defineStore("board", {
     },
     async setUpdatePost(post) {
       try {
+        // Note we are not updating the comments here
+        // We did that in the component and we are trying
+        // to avoid reactivity and posts moving in the list
         this.loading = true;
-        const response = await authenticatedApiCall("PATCH", "/post", post);
-        console.log("Message board response:", response);
-        // find the post in the array and update it
-        const index = this.posts.findIndex((p) => p.PK === post.PK);
-        this.posts[index] = { ...this.posts[index], ...response.data };
+        await authenticatedApiCall("PATCH", "/post", post);
         this.loading = false;
       } catch (error) {
         handleError(error);
@@ -73,22 +72,11 @@ export const useBoardStore = defineStore("board", {
     },
     async setUpdateComment(comment) {
       try {
+        // Note we are not updating the comments here
+        // We did that in the component and we are trying
+        // to avoid reactivity and posts moving in the list
         this.loading = true;
-        const response = await authenticatedApiCall(
-          "PATCH",
-          "/comment",
-          comment
-        );
-        console.log("Message board response:", response);
-        // find the post in the array and update it
-        const postIndex = this.posts.findIndex((p) => p.PK === comment.PK);
-        const commentIndex = this.posts[postIndex].comments.findIndex(
-          (c) => c.SK === comment.SK
-        );
-        this.posts[postIndex].comments[commentIndex] = {
-          ...this.posts[postIndex].comments[commentIndex],
-          ...response.data,
-        };
+        await authenticatedApiCall("PATCH", "/comment", comment);
         this.loading = false;
       } catch (error) {
         handleError(error);

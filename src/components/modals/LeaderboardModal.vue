@@ -28,11 +28,19 @@
         <div
           v-for="(entry, index) in leaderboard"
           :key="index"
-          class="flex justify-between items-center py-2 border-b"
+          class="flex justify-between items-center py-2"
         >
-          <span class="font-semibold"
-            >{{ getRankDisplay(entry.rank) }} {{ entry.username }}</span
-          >
+          <span class="font-semibold flex items-center">
+            <!-- <span class="pr-2">
+              {{ getRankDisplay(entry.rank) }}
+            </span> -->
+            <img
+              :src="getImagePath(entry.icon)"
+              alt="User icon"
+              class="w-6 h-6 mr-2 rounded-full"
+            />
+            {{ entry.username }}
+          </span>
           <span class="text-gray-600">{{ entry.score }}</span>
         </div>
       </div>
@@ -57,11 +65,14 @@ const { leaderboard } = storeToRefs(leaderboardStore);
 
 const closeModal = () => emit("close");
 
-const getRankDisplay = (rank) => {
-  const suffixes = ["st", "nd", "rd"];
-  const emojis = ["🥇", "🥈", "🥉"];
-  const suffix = rank <= 3 ? suffixes[rank - 1] : "th";
-  const emoji = rank <= 3 ? emojis[rank - 1] : "";
-  return `${emoji}${rank}${suffix}`;
-};
+const getImagePath = (icon) => `/images/profile/${icon}.png`;
+
+// const getRankDisplay = (rank) => {
+//   const suffixes = ["st", "nd", "rd"];
+//   const emojis = ["🥇", "🥈", "🥉"];
+//   const suffix = rank <= 3 ? suffixes[rank - 1] : "th";
+//   const emoji = rank <= 3 ? emojis[rank - 1] : "";
+//   if (rank === 999999) return "Last Place 🥺";
+//   return `${emoji}${rank}${suffix}`;
+// };
 </script>

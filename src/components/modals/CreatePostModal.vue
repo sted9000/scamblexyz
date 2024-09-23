@@ -93,8 +93,8 @@ const userName = computed(() => userStore.userName);
 
 const categories = [
   {
-    value: "newSites",
-    label: "New Sites",
+    value: "news",
+    label: "News",
     activeClass: "bg-orange-500 border-orange-600 text-white",
     inactiveClass:
       "bg-white text-orange-500 border-orange-300 hover:bg-orange-100",

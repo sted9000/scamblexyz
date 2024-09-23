@@ -5,7 +5,7 @@ export const TWITTER_URL = "https://x.com/ted_slocum";
 export const GITHUB_URL = "https://github.com/sted9000/scambling-xyz";
 export const CTA_TITLE = "Never Miss a Sweepstakes Reward Again";
 export const CTA_DESCRIPTION =
-  "Check in, earn points, and climb the leaderboard while staying connected to the sweepstake community.";
+  "Check in, climb the leaderboard, and track your rewards while staying connected to the sweepstakes community.";
 export const SELLING_POINT = "It's Totally Free!";
 export const CTA_SECONDARY_LINK =
   "https://github.com/sted9000/vue-startup-template";
@@ -36,7 +36,7 @@ export const sites = {
     fullName: "Sportzino",
     url: "https://sportzino.com/casino-lobby/lobby",
     imagePath: "/images/icon-sportzino.ico",
-    isCard: true,
+    isCard: false,
     cssColor: "#45B7D1",
     tailwindColor: "bg-blue-400",
   },
@@ -46,7 +46,7 @@ export const sites = {
     fullName: "Zula Casino",
     url: "https://www.zulacasino.com/lobby",
     imagePath: "/images/icon-zula.ico",
-    isCard: true,
+    isCard: false,
     cssColor: "#F7B731",
     tailwindColor: "bg-yellow-400",
   },
@@ -69,16 +69,6 @@ export const sites = {
     isCard: false,
     cssColor: "#26DE81",
     tailwindColor: "bg-green-400",
-  },
-  "SITE#6": {
-    id: 6,
-    name: "gambino",
-    fullName: "Gambino Slots",
-    url: null,
-    imagePath: "/images/icon-gambino.ico",
-    isCard: false,
-    cssColor: "#FD9644",
-    tailwindColor: "bg-orange-400",
   },
   "SITE#7": {
     id: 7,
@@ -126,7 +116,7 @@ export const sites = {
     fullName: "Pulsz",
     url: "https://www.pulsz.com/home",
     imagePath: "/images/icon-pulsz.ico",
-    isCard: false,
+    isCard: true,
     cssColor: "#8E44AD",
     tailwindColor: "bg-purple-600",
   },
@@ -166,7 +156,7 @@ export const sites = {
     fullName: "Luckyland",
     url: "https://www.luckylandslots.com/",
     imagePath: "/images/icon-luckyland.ico",
-    isCard: false,
+    isCard: true,
     cssColor: "#E74C3C",
     tailwindColor: "bg-red-500",
   },
@@ -176,7 +166,7 @@ export const sites = {
     fullName: "McLuck",
     url: "https://www.mcluck.com/home",
     imagePath: "/images/icon-mcluck.ico",
-    isCard: false,
+    isCard: true,
     cssColor: "#9B59B6",
     tailwindColor: "bg-purple-500",
   },
@@ -196,7 +186,7 @@ export const sites = {
     fullName: "Modo",
     url: "https://modo.us/lobby",
     imagePath: "/images/icon-modo.ico",
-    isCard: false,
+    isCard: true,
     cssColor: "#1ABC9C",
     tailwindColor: "bg-teal-500",
   },
@@ -216,7 +206,7 @@ export const sites = {
     fullName: "High 5",
     url: "https://fun.high5casino.com/gc",
     imagePath: "/images/icon-high5.ico",
-    isCard: false,
+    isCard: true,
     cssColor: "#2980B9",
     tailwindColor: "bg-blue-600",
   },
@@ -226,7 +216,7 @@ export const sites = {
     fullName: "Stake",
     url: "https://stake.us/",
     imagePath: "/images/icon-stake.png",
-    isCard: false,
+    isCard: true,
     cssColor: "#C0392B",
     tailwindColor: "bg-red-700",
   },

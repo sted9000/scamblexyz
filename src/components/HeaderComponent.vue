@@ -6,10 +6,10 @@
           <router-link to="/" class="text-2xl font-bold animated-text">{{
             APP_NAME
           }}</router-link>
-          <span
+          <!-- <span
             class="absolute right-0 -bottom-3 text-[0.6rem] text-gray-500 hidden sm:inline"
             >by {{ SPONSOR }}</span
-          >
+          > -->
         </div>
       </div>
       <NavigationComponent />
@@ -20,5 +20,5 @@
 <script setup>
 import "@/assets/css/animatedText.css";
 import NavigationComponent from "@/components/NavigationComponent.vue";
-import { APP_NAME, SPONSOR } from "@/constants";
+import { APP_NAME } from "@/constants";
 </script>

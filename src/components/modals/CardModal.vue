@@ -28,6 +28,7 @@
                 :value="site.value"
                 v-model="cardSite"
                 class="hidden"
+                required
               />
               <img :src="site.image" :alt="site.label" class="w-3 h-3 mr-2" />
               {{ site.label }}
@@ -43,6 +44,7 @@
             id="cardCount"
             v-model="cardCount"
             required
+            min="1"
             class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
           />
         </div>
@@ -96,15 +98,13 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useModalStore } from "@/stores/modal";
-import { useBoardStore } from "@/stores/board";
+import { useCardStore } from "@/stores/card";
 import { useUserStore } from "@/stores/user";
 const modalStore = useModalStore();
-const boardStore = useBoardStore();
+const cardStore = useCardStore();
 const userStore = useUserStore();
-
 const cardCount = ref(0);
 const cardSite = ref("");
-const userName = computed(() => userStore.userName);
 const cardSites = computed(() =>
   userStore.getCardSites.map((site) => {
     return {
@@ -125,15 +125,20 @@ const closeModal = () => {
 };
 
 const submitPost = () => {
+  if (!cardSite.value || cardCount.value <= 0 || !dateSent.value) {
+    alert("Please fill in all required fields");
+    return;
+  }
+  // turn date into timestamp
+  const timestamp = new Date(dateSent.value).getTime();
   const newPost = {
-    cardCount: cardCount.value,
-    category: cardSite.value,
-    userName: userName.value,
-    dateSent: dateSent.value,
-    allowAnonymizedData: allowAnonymizedData.value,
+    sentCount: cardCount.value,
+    dateSent: timestamp,
+    allowShare: allowAnonymizedData.value,
+    siteId: cardSite.value,
   };
-
-  boardStore.addPost(newPost);
+  // console.log(newPost);
+  cardStore.addBatch(newPost);
   closeModal();
 };
 </script>
