@@ -95,7 +95,9 @@ import { sites as localSites } from "@/constants";
 const userStore = useUserStore();
 const cardStore = useCardStore();
 const drops = computed(() =>
-  cardStore.getDrops.sort((a, b) => new Date(b.DropDate) - new Date(a.DropDate))
+  [...cardStore.getDrops].sort(
+    (a, b) => new Date(b.DropDate) - new Date(a.DropDate)
+  )
 );
 const cordSites = computed(() =>
   userStore.getCardSites.map((site) => ({ text: site.fullName, id: site.SK }))
