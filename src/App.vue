@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col min-h-screen bg-gray-50 mb-10">
-    <HeaderComponent />
+  <div class="flex flex-col min-h-screen bg-white">
+    <!-- <HeaderComponent /> -->
     <main class="flex-grow flex items-center justify-center">
       <div
         v-if="isLoading"
@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import HeaderComponent from "./components/HeaderComponent.vue";
+// import HeaderComponent from "./components/HeaderComponent.vue";
 // import FooterComponent from "./components/FooterComponent.vue";
 import { computed } from "vue";
 import { useUserStore } from "@/stores/user";

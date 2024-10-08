@@ -10,14 +10,19 @@
   "dependencies": {
     "@aws-amplify/auth": "^6.3.15",
     "@aws-amplify/ui-vue": "^4.2.11",
+    "@heroicons/vue": "^2.1.5",
     "@observablehq/plot": "^0.6.16",
     "aws-amplify": "^6.5.2",
     "axios": "^1.7.5",
     "core-js": "^3.8.3",
     "fs": "^0.0.1-security",
+    "jwt-decode": "^4.0.0",
     "pinia": "^2.2.2",
+    "socket.io-client": "^4.8.0",
     "vue": "^3.2.13",
-    "vue-router": "^4.4.3"
+    "vue-google-oauth2": "^1.5.10",
+    "vue-router": "^4.4.3",
+    "vue3-google-signin": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -26,6 +31,7 @@
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "autoprefixer": "^10.4.20",
+    "daisyui": "^4.12.10",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "postcss": "^8.4.47",

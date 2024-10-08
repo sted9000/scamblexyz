@@ -1,5 +1,5 @@
-import { useUserStore } from "@/stores/user";
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
 
 const routes = [
   {
@@ -12,36 +12,32 @@ const routes = [
     name: "App",
     component: () => import("@/components/ApplicationComponent.vue"),
     meta: { requiresAuth: true },
-    beforeEnter: async (to, from, next) => {
-      const userStore = useUserStore();
-      if (!userStore.backendUserDataFetched) {
-        await userStore.fetchBackendUserData();
-      }
-      next();
-    },
   },
 ];
+
+// function checkAuthStatus() {
+//   const token = localStorage.getItem("auth_token");
+//   return !!token; // Returns true if token exists, false otherwise
+// }
 
 const router = createRouter({
   history: createWebHistory(),
   routes,
 });
 
-router.beforeEach(async (to, from, next) => {
-  const userStore = useUserStore();
-  await userStore.checkUser();
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
 
-  if (to.path === "/" && to.query.auth === "success") {
-    next({ name: "App" });
-    return;
-  }
+  // Initialize the auth status from localStorage
+  authStore.initializeAuth();
 
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!userStore.isAuthenticated) {
-      next({ name: "LandingPage" });
-    } else {
-      next();
-    }
+  if (to.path === "/" && authStore.isAuthenticated) {
+    next("/app");
+  } else if (
+    to.matched.some((record) => record.meta.requiresAuth) &&
+    !authStore.isAuthenticated
+  ) {
+    next("/");
   } else {
     next();
   }

@@ -1,145 +1,236 @@
 <template>
-  <div class="min-h-screen flex flex-col">
-    <div class="flex-grow">
-      <div
-        class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full flex flex-col space-y-4"
-      >
-        <YourScoreComponent />
-        <ScrollingTickerComponent />
+  <div class="flex flex-col bg-white h-screen overflow-hidden">
+    <header
+      class="w-full border-b-2 border-gray-200 px-8 p-4 flex justify-between items-center"
+    >
+      <div class="text-2xl font-bold animated-text">{{ APP_NAME }}</div>
+      <ScrollingTickerComponent class="flex-grow mx-4" />
+      <div class="flex items-center">
+        <button @click="modalStore.setOpenModal('config')" class="mr-4">
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+            ></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            ></path>
+          </svg>
+        </button>
+        <button @click="modalStore.setOpenModal('editProfile')" class="w-6 h-6">
+          <img
+            :src="`/images/profile/${userIcon}.png`"
+            alt="User Avatar"
+            class="w-full h-full rounded-full object-contain"
+          />
+        </button>
+        <button @click="authStore.handleSignOut" class="ml-4 text-gray-600 hover:text-gray-800 flex items-center">
+          <ArrowLeftEndOnRectangleIcon class="w-6 h-6 mr-1" />
+        </button>
+      </div>
+    </header>
 
+    <div class="flex flex-1 overflow-hidden">
+      <nav class="w-56 text-gray-900 hidden md:block custom-scroll">
+        <NavMenu @itemSelected="handlePageChange" />
+      </nav>
+
+      <div class="md:hidden">
+        <button @click="toggleDrawer" class="p-4">
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h16"
+            ></path>
+          </svg>
+        </button>
         <div
-          class="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4"
+          v-if="isDrawerOpen"
+          class="fixed inset-0 bg-gray-800 bg-opacity-75 z-50"
         >
-          <!-- Daily Checkin -->
-          <div class="w-full lg:w-1/2 h-[50vh] md:h-[75vh] overflow-hidden">
-            <DailyCheckinComponent />
+          <div class="w-64 bg-gray-800 text-white h-full">
+            <button @click="toggleDrawer" class="p-4">Close</button>
+            <NavMenu @itemSelected="handlePageChange" />
           </div>
-
-          <!-- Message Board -->
-          <div class="w-full lg:w-1/2 h-[50vh] md:h-[75vh] overflow-hidden">
-            <MessageBoardComponent />
-          </div>
-        </div>
-
-        <!-- Streaks -->
-        <div>
-          <StreakComponent />
-        </div>
-
-        <div
-          class="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4"
-        >
-          <!-- Community Card -->
-          <div class="w-full lg:w-1/2 h-[50vh] md:h-[75vh] overflow-hidden">
-            <CommunityCardComponent />
-          </div>
-
-          <!-- Recent Drops -->
-          <div class="w-full lg:w-1/2 h-[50vh] md:h-[75vh] overflow-hidden">
-            <RecentDropsComponent />
-          </div>
-        </div>
-
-        <!-- User Card -->
-        <div class="h-[50vh] md:h-[75vh] overflow-hidden">
-          <UserCardComponent />
         </div>
       </div>
+
+      <div class="flex-grow md:w-1/2 lg:w-7/12 custom-scroll">
+        <HomeView v-if="currentPage === 'Home'" :title="currentPage" />
+        <CheckinView
+          v-else-if="currentPage === 'Checkins'"
+          :title="currentPage"
+        />
+        <BonusesView
+          v-else-if="currentPage === 'Bonuses'"
+          :title="currentPage"
+        />
+        <PostcardView
+          v-else-if="currentPage === 'Postcards'"
+          :title="currentPage"
+        />
+        <GamesView
+          v-else-if="currentPage === 'Games'"
+          :title="currentPage"
+        />
+        <LeaderboardView
+          v-else-if="currentPage === 'Leaderboards'"
+          :title="currentPage"
+        />
+        <ReviewView
+          v-else-if="currentPage === 'Reviews'"
+          :title="currentPage"
+        />
+        <AboutView v-else-if="currentPage === 'About'" :title="currentPage" />
+      </div>
+
+      <div class="w-96 hidden lg:block custom-scroll">
+        <NewsArticlesComponent />
+      </div>
+
+      <div
+        v-if="modalOpen"
+        class="fixed inset-0 bg-black bg-opacity-50 z-40"
+      ></div>
+
+      <ConfigModal v-if="configModal" @close="handleCloseModal" />
+      <CreatePostModal v-if="createPostModal" @close="handleCloseModal" />
+      <EditProfileModal v-if="editProfileModal" @close="handleCloseModal" />
+      <NewBatchModal v-if="newBatchModal" @close="handleCloseModal" />
+      <AddDropModal v-if="addDropModal" @close="handleCloseModal" />
+      <UpdateBatchModal v-if="updateBatchModal" @close="handleCloseModal" />
+      <RejectionModal v-if="rejectionModal" @close="handleCloseModal" />
+      <BatchModal v-if="batchModal" @close="handleCloseModal" />
+      <NewBonusModal v-if="newBonusModal" @close="handleCloseModal" />
     </div>
-
-    <!-- Floating action buttons -->
-    <div class="fixed bottom-4 right-4 flex space-x-2">
-      <button
-        @click="modalStore.setOpenModal('leaderboard')"
-        class="bg-green-500 hover:bg-green-600 text-white p-2 rounded-full"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-          />
-        </svg>
-      </button>
-
-      <button
-        @click="modalStore.setOpenModal('help')"
-        class="bg-purple-500 hover:bg-purple-600 text-white p-2 rounded-full"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      </button>
-    </div>
-
-    <!-- Make background opacity 50% when modal is open -->
-    <div
-      v-if="modalOpen"
-      class="fixed inset-0 bg-black bg-opacity-50 z-40"
-    ></div>
-
-    <!-- Modal -->
-    <ConfigModal v-if="configModal" @close="handleCloseModal" />
-    <LeaderboardModal v-if="leaderboardModal" @close="handleCloseModal" />
-    <HelpModal v-if="helpModal" @close="handleCloseModal" />
-    <CreatePostModal v-if="createPostModal" @close="handleCloseModal" />
-    <EditProfileModal v-if="editProfileModal" @close="handleCloseModal" />
-    <CardModal v-if="cardModal" @close="handleCloseModal" />
-    <UpdateCardModal v-if="updateCardModal" @close="handleCloseModal" />
+  </div>
+  <div class="fixed bottom-4 right-4 flex flex-col space-y-2">
+    <button
+      @click="modalStore.setOpenModal('newBonus')"
+      class="btn btn-circle btn-secondary"
+    >
+      <PlusIcon class="w-6 h-6" />
+    </button>
+    <button
+      @click="modalStore.setOpenModal('newBatch')"
+      class="btn btn-circle btn-accent"
+    >
+      <EnvelopeIcon class="w-6 h-6" />
+    </button>
+    <button
+      @click="modalStore.setOpenModal('addDrop')"
+      class="btn btn-circle btn-accent"
+    >
+      <DownIcon class="w-6 h-6" />
+    </button>
   </div>
 </template>
 
 <script setup>
-import YourScoreComponent from "@/components/YourScoreComponent.vue";
+import { ref, computed, onMounted } from "vue";
+import "@/assets/css/animatedText.css";
+import NavMenu from "@/components/NavMenu.vue";
 import ScrollingTickerComponent from "@/components/ScrollingTickerComponent.vue";
-import DailyCheckinComponent from "@/components/DailyCheckinComponent.vue";
-import MessageBoardComponent from "@/components/MessageBoardComponent.vue";
-import RecentDropsComponent from "@/components/RecentDropsComponent.vue";
-import StreakComponent from "@/components/StreakComponent.vue";
-import CommunityCardComponent from "@/components/CommunityCardComponent.vue";
-import UserCardComponent from "@/components/UserCardComponent.vue";
+import HomeView from "@/components/views/HomeView.vue";
+import CheckinView from "@/components/views/CheckinView.vue";
+import BonusesView from "@/components/views/BonusesView.vue";
+import PostcardView from "@/components/views/PostcardView.vue";
+import GamesView from "@/components/views/GamesView.vue";
+import LeaderboardView from "@/components/views/LeaderboardView.vue";
+import ReviewView from "@/components/views/ReviewView.vue";
+import AboutView from "@/components/views/AboutView.vue";
+import NewsArticlesComponent from "@/components/news/NewsArticlesComponent.vue";
 import ConfigModal from "@/components/modals/ConfigModal.vue";
-import CardModal from "@/components/modals/CardModal.vue";
-import UpdateCardModal from "@/components/modals/UpdateCardModal.vue";
-import HelpModal from "@/components/modals/HelpModal.vue";
-import LeaderboardModal from "@/components/modals/LeaderboardModal.vue";
+import NewBatchModal from "@/components/modals/NewBatchModal.vue";
+import AddDropModal from "@/components/modals/AddDropModal.vue";
+import UpdateBatchModal from "@/components/modals/UpdateBatchModal.vue";
+import BatchModal from "@/components/modals/BatchModal.vue";
 import CreatePostModal from "@/components/modals/CreatePostModal.vue";
 import EditProfileModal from "@/components/modals/EditProfileModal.vue";
-import { computed } from "vue";
-// import { useUserStore } from "@/stores/user";
+import NewBonusModal from "@/components/modals/NewBonusModal.vue";
+import RejectionModal from "@/components/modals/RejectionModal.vue";
 import { useModalStore } from "@/stores/modal";
+import { APP_NAME } from "@/constants";
+import { useAuthStore } from "@/stores/auth";
+import { useUserStore } from "@/stores/user";
+import { useBonusStore } from "@/stores/bonus";
+import { usePostcardStore } from "@/stores/postcard";
+import { useLeaderboardStore } from "@/stores/leaderboard";
+import {
+  PlusIcon,
+  EnvelopeIcon,
+  ChevronDownIcon as DownIcon,
+  ArrowLeftEndOnRectangleIcon,
+} from "@heroicons/vue/24/outline";
+// New Stores
+import { useCheckinStore } from "@/stores/checkin";
+const checkinStore = useCheckinStore();
+const userStore = useUserStore();
+const bonusStore = useBonusStore();
+const postcardStore = usePostcardStore();
+const leaderboardStore = useLeaderboardStore();
+onMounted(() => {
+  userStore.fetchUserSites();
+  checkinStore.fetchCheckin();
+  bonusStore.fetchCommunityBonus();
+  postcardStore.fetchDrops();
+  leaderboardStore.initializeSocket();
+});
 
-// const userStore = useUserStore();
+const authStore = useAuthStore();
+const userIcon = computed(() => authStore.getUserIcon);
 const modalStore = useModalStore();
-// const isLoading = computed(() => userStore.getIsLoading);
 const modalOpen = computed(() => modalStore.getModalOpen);
 const configModal = computed(() => modalStore.getConfigModal);
-const helpModal = computed(() => modalStore.getHelpModal);
-const leaderboardModal = computed(() => modalStore.getLeaderboardModal);
-const cardModal = computed(() => modalStore.getCardModal);
-const updateCardModal = computed(() => modalStore.getUpdateCardModal);
+const newBatchModal = computed(() => modalStore.getNewBatchModal);
+const addDropModal = computed(() => modalStore.getAddDropModal);
+const updateBatchModal = computed(() => modalStore.getUpdateBatchModal);
+const batchModal = computed(() => modalStore.getBatchModal);
 const createPostModal = computed(() => modalStore.getCreatePostModal);
 const editProfileModal = computed(() => modalStore.getEditProfileModal);
+const newBonusModal = computed(() => modalStore.getNewBonusModal);
+const rejectionModal = computed(() => modalStore.getRejectionModal);
+
+const isDrawerOpen = ref(false);
+const currentPage = ref("Postcards");
+const toggleDrawer = () => (isDrawerOpen.value = !isDrawerOpen.value);
 
 const handleCloseModal = () => {
   modalStore.setCloseAllModals();
 };
+const handlePageChange = (page) => {
+  console.log(page);
+  currentPage.value = page;
+};
 </script>
+
+<style scoped>
+.custom-scroll {
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  display: none;
+}
+</style>

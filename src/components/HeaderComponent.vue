@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center py-4">
       <div class="flex-shrink-0">
         <div class="relative">
-          <router-link to="/" class="text-2xl font-bold animated-text">{{
+          <router-link to="/" class="font-2xl font-bold animated-text">{{
             APP_NAME
           }}</router-link>
           <!-- <span

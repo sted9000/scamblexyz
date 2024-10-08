@@ -6,14 +6,22 @@
     <div
       class="bg-white rounded-lg p-8 max-w-md w-full max-h-[90vh] overflow-y-auto"
     >
-      <h2 class="text-2xl font-bold mb-4">Track Your Cards</h2>
+      <h2 class="text-2xl font-bold mb-4">Record Your Drop</h2>
+      <div class="text-md text-gray-700 mt-1">Site: {{ batchSiteName }}</div>
+        <div class="text-md text-gray-700 mt-1">Batch Id: {{ batch.id }}</div>
+        <div class="text-md text-gray-700 mt-1">Date Sent: {{ new Date(batch.submissionDate).toLocaleDateString("en-US", {
+              month: "2-digit",
+              day: "2-digit",
+              year: "numeric",
+            }) }}</div> 
+      <div class="text-md text-gray-700 mt-1">Status: {{ batchStatus(batch) }}</div>
+      <div class="text-md text-gray-700 mt-1">Batch Size: {{ batch.totalCards }}</div>
+      <div class="text-md text-gray-700 mt-1">Credited: {{ batch.creditedCards }}</div>
+      
       <form @submit.prevent="submitPost" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2"
-            >Site</label
-          >
           <div class="flex flex-wrap -mx-1">
-            <label
+            <!-- <label
               v-for="site in cardSites"
               :key="site.value"
               :class="[
@@ -28,35 +36,38 @@
                 :value="site.value"
                 v-model="cardSite"
                 class="hidden"
-                required
               />
               <img :src="site.image" :alt="site.label" class="w-3 h-3 mr-2" />
               {{ site.label }}
-            </label>
+            </label> -->
           </div>
         </div>
         <div>
           <label for="cardCount" class="block text-sm font-medium text-gray-700"
-            >How many cards</label
+            >How many new cards dropped?</label
           >
           <input
             type="number"
             id="cardCount"
             v-model="cardCount"
+            :min="1"
+            :max="batch.pendingCards"
             required
-            min="1"
             class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
           />
+          <p v-if="!isCardCountValid" class="text-red-500 text-sm mt-1">
+            Card count must be between 1 and {{ batch.pendingCards }}.
+          </p>
         </div>
 
         <div>
           <label for="dateSent" class="block text-sm font-medium text-gray-700"
-            >Date Sent</label
+            >Date Credited</label
           >
           <input
             type="date"
-            id="dateSent"
-            v-model="dateSent"
+            id="dateCredited"
+            v-model="dateCredited"
             required
             class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
           />
@@ -85,7 +96,8 @@
           </button>
           <button
             type="submit"
-            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            :disabled="!isCardCountValid"
+            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Submit
           </button>
@@ -98,47 +110,38 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useModalStore } from "@/stores/modal";
-import { useCardStore } from "@/stores/card";
-import { useUserStore } from "@/stores/user";
+import { usePostcardStore } from "@/stores/postcard";
+import { sites as localSites } from "@/constants";
+import { batchStatus } from "@/utils";
 const modalStore = useModalStore();
-const cardStore = useCardStore();
-const userStore = useUserStore();
-const cardCount = ref(0);
-const cardSite = ref("");
-const cardSites = computed(() =>
-  userStore.getCardSites.map((site) => {
-    return {
-      label: site.fullName,
-      value: site.SK,
-      image: site.imagePath,
-      SK: site.SK,
-      activeClass: "bg-gray-700 border-gray-800 text-white",
-      inactiveClass: "bg-white text-gray-700 border-gray-300 hover:bg-gray-300",
-    };
-  })
-);
-const dateSent = ref(new Date().toISOString().split("T")[0]);
+const postcardStore = usePostcardStore();
+const batch = computed(() => postcardStore.getBatch);
+const dateCredited = ref(new Date().toISOString().substr(0, 10));
+const cardCount = ref(1);
 const allowAnonymizedData = ref(true);
+const batchSiteName = computed(() => {
+  return localSites[batch.value.id].fullName;
+});
+
+const isCardCountValid = computed(() => {
+  return cardCount.value > 0 && cardCount.value <= batch.value.pendingCards;
+});
 
 const closeModal = () => {
   modalStore.setCloseAllModals();
 };
 
 const submitPost = () => {
-  if (!cardSite.value || cardCount.value <= 0 || !dateSent.value) {
-    alert("Please fill in all required fields");
-    return;
-  }
-  // turn date into timestamp
-  const timestamp = new Date(dateSent.value).getTime();
-  const newPost = {
-    sentCount: cardCount.value,
-    dateSent: timestamp,
-    allowShare: allowAnonymizedData.value,
-    siteId: cardSite.value,
+  if (!isCardCountValid.value) return;
+
+  const drop = {
+    dropDate: new Date(dateCredited.value),
+    dropType: "drop",
+    cardsProcessed: cardCount.value,
+    siteId: batch.value.siteId,
   };
-  // console.log(newPost);
-  cardStore.addBatch(newPost);
+
+  postcardStore.addDrop({ drop, batchId: batch.value.id });
   closeModal();
 };
 </script>

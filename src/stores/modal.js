@@ -5,14 +5,15 @@ export const useModalStore = defineStore("modal", {
     configModal: false,
     graphModal: false,
     leaderboardModal: false,
-    cardModal: false,
-    updateCardModal: false,
+    newBatchModal: false,
+    addDropModal: false,
+    updateBatchModal: false,
+    batchModal: false,
     helpModal: false,
     createPostModal: false,
     editProfileModal: false,
-
-    // modal data
-    modalData: {},
+    newBonusModal: false,
+    rejectionModal: false,
   }),
   getters: {
     getConfigModal: (state) => {
@@ -24,11 +25,20 @@ export const useModalStore = defineStore("modal", {
     getLeaderboardModal: (state) => {
       return state.leaderboardModal;
     },
-    getCardModal: (state) => {
-      return state.cardModal;
+    getNewBatchModal: (state) => {
+      return state.newBatchModal;
     },
-    getUpdateCardModal: (state) => {
-      return state.updateCardModal;
+    getAddDropModal: (state) => {
+      return state.addDropModal;
+    },
+    getUpdateBatchModal: (state) => {
+      return state.updateBatchModal;
+    },
+    getRejectionModal: (state) => {
+      return state.rejectionModal;
+    },
+    getBatchModal: (state) => {
+      return state.batchModal;
     },
     getHelpModal: (state) => {
       return state.helpModal;
@@ -42,16 +52,23 @@ export const useModalStore = defineStore("modal", {
     getModalData: (state) => {
       return state.modalData;
     },
+    getNewBonusModal: (state) => {
+      return state.newBonusModal;
+    },
     getModalOpen: (state) => {
       return (
         state.configModal ||
         state.graphModal ||
         state.leaderboardModal ||
-        state.cardModal ||
-        state.updateCardModal ||
+        state.newBatchModal ||
+        state.addDropModal ||
+        state.updateBatchModal ||
+        state.batchModal ||
         state.helpModal ||
         state.createPostModal ||
-        state.editProfileModal
+        state.editProfileModal ||
+        state.newBonusModal ||
+        state.rejectionModal
       );
     },
   },
@@ -60,14 +77,18 @@ export const useModalStore = defineStore("modal", {
       this.configModal = false;
       this.graphModal = false;
       this.leaderboardModal = false;
-      this.cardModal = false;
-      this.updateCardModal = false;
+      this.newBatchModal = false;
+      this.addDropModal = false;
+      this.updateBatchModal = false;
+      this.batchModal = false;
       this.helpModal = false;
       this.createPostModal = false;
       this.editProfileModal = false;
+      this.newBonusModal = false;
+      this.rejectionModal = false;
       this.modalData = {};
     },
-    setOpenModal(modalName, data) {
+    setOpenModal(modalName) {
       this.setCloseAllModals();
       switch (modalName) {
         case "config":
@@ -79,12 +100,17 @@ export const useModalStore = defineStore("modal", {
         case "leaderboard":
           this.leaderboardModal = true;
           break;
-        case "card":
-          this.cardModal = true;
+        case "newBatch":
+          this.newBatchModal = true;
           break;
-        case "updateCard":
-          this.updateCardModal = true;
-          this.modalData = data;
+        case "addDrop":
+          this.addDropModal = true;
+          break;
+        case "updateBatch":
+          this.updateBatchModal = true;
+          break;
+        case "batch":
+          this.batchModal = true;
           break;
         case "help":
           this.helpModal = true;
@@ -94,6 +120,12 @@ export const useModalStore = defineStore("modal", {
           break;
         case "editProfile":
           this.editProfileModal = true;
+          break;
+        case "newBonus":
+          this.newBonusModal = true;
+          break;
+        case "addRejection":
+          this.rejectionModal = true;
           break;
         default:
           console.error("Invalid modal name:", modalName);

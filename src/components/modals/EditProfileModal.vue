@@ -28,7 +28,7 @@
               v-for="icon in icons"
               :key="icon.id"
               @click="selectIcon(icon.id)"
-              class="cursor-pointer p-1 rounded-md"
+              class="cursor-pointer p-2 rounded-full h-10 w-10"
               :class="{ 'bg-blue-100': selectedIcon === icon.id }"
             >
               <img
@@ -61,10 +61,10 @@
 
 <script setup>
 import { ref, onMounted, defineEmits } from "vue";
-import { useUserStore } from "@/stores/user";
-const userStore = useUserStore();
-const selectedIcon = ref(userStore.backendUserData?.icon || "");
-const username = ref(userStore.backendUserData?.username || "");
+import { useAuthStore } from "@/stores/auth";
+const authStore = useAuthStore();
+const selectedIcon = ref(authStore.getUserIcon);
+const username = ref(authStore.getUsername);
 const emit = defineEmits(["close", "update"]);
 const icons = ref([]);
 
@@ -93,9 +93,9 @@ const closeModal = () => {
 const updateProfile = () => {
   if (username.value && selectedIcon.value !== "") {
     console.log(username.value, selectedIcon.value);
-    userStore.setEditProfile({
+    authStore.setEditProfile({
       username: username.value,
-      icon: selectedIcon.value,
+      userIcon: selectedIcon.value,
     });
     closeModal();
   } else {

@@ -1,9 +1,6 @@
 <template>
-  <div
-    class="bg-gray-50 w-full overflow-hidden mt-4 py-2 relative"
-    ref="container"
-  >
-    <div class="max-w-6xl mx-auto px-4">
+  <div class="w-full overflow-hidden py-2 relative bg-white" ref="container">
+    <div class="mx-auto px-4">
       <div v-if="isLoading" class="text-center text-gray-700">
         Loading leaderboard...
       </div>
@@ -14,13 +11,15 @@
           :style="{ animationDuration: `${duration}s` }"
         >
           <div
-            v-for="(player, index) in leaderboard"
+            v-for="(item, index) in leaderboard"
             :key="`ticker1-${index}`"
-            class="px-5 text-gray-700"
+            :class="[
+              'text-gray-700',
+              'font-bold',
+              (index + 1) % 4 === 0 ? 'pr-12' : 'pr-4',
+            ]"
           >
-            {{ setRank(player.rank) }} {{ player.username }} ({{
-              player.score
-            }})
+            {{ item }}
           </div>
         </div>
         <div
@@ -29,25 +28,28 @@
           :style="{ animationDuration: `${duration}s` }"
         >
           <div
-            v-for="(player, index) in leaderboard"
-            :key="`ticker2-${index}`"
-            class="px-5 text-gray-700"
+            v-for="(item, index) in leaderboard"
+            :key="`ticker1-${index}`"
+            :class="[
+              'text-gray-700',
+              'font-bold',
+              (index + 1) % 4 === 0 ? 'pr-12' : 'pr-4',
+            ]"
           >
-            {{ setRank(player.rank) }}
-            {{ player.username }} ({{ player.score }})
+            {{ item }}
           </div>
         </div>
       </div>
     </div>
     <div
-      class="absolute inset-0 pointer-events-none bg-gradient-to-r from-gray-50 via-transparent to-gray-50"
+      class="absolute inset-0 pointer-events-none bg-gradient-to-r from-white via-transparent to-white"
       style="
         mask-image: linear-gradient(
           to right,
-          black 5%,
+          white 5%,
           transparent 20%,
           transparent 80%,
-          black 95%
+          white 95%
         );
       "
     ></div>
@@ -55,47 +57,60 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick, computed, defineProps } from "vue";
+import { ref, onMounted, nextTick, computed } from "vue";
 import { useLeaderboardStore } from "../stores/leaderboard";
 
-const props = defineProps({
-  mockData: {
-    type: Array,
-    default: () => [],
-  },
-});
-
 const leaderboardStore = useLeaderboardStore();
+const bannerPlayers = computed(() => {
+  return leaderboardStore.bannerPlayers;
+});
+const leaderboardString = (title, items) => {
+  let result = [title];
+  items.forEach((item, index) => {
+    let str = "";
+    if (index === 0) {
+      str += "🥇 ";
+    } else if (index === 1) {
+      str += "🥈 ";
+    } else if (index === 2) {
+      str += "🥉 ";
+    } else {
+      str += "🏅 ";
+    }
+    str += `${item.username} (${item.score})`;
+    result.push(str);
+  });
+  return result;
+};
 const leaderboard = computed(() => {
-  if (props.mockData.length > 0) {
-    return props.mockData;
-  }
-  return leaderboardStore.getLeaderboard;
+  if (!bannerPlayers.value) return ["Loading..."];
+  let formattedLeaderboard = [];
+  formattedLeaderboard.push(
+    ...leaderboardString("All Time Leaders: ", bannerPlayers.value["ALL_TIME"])
+  );
+  formattedLeaderboard.push(
+    ...leaderboardString("Weekly Leaders: ", bannerPlayers.value["WEEKLY"])
+  );
+  formattedLeaderboard.push(
+    ...leaderboardString(
+      "Yesterday's Leaders: ",
+      bannerPlayers.value["DAILY_YESTERDAY"]
+    )
+  );
+  formattedLeaderboard.push(
+    ...leaderboardString(
+      "Today's Leaders: ",
+      bannerPlayers.value["DAILY_TODAY"]
+    )
+  );
+  return formattedLeaderboard;
 });
 
-// Modify the isLoading computed property
-const isLoading = computed(() => {
-  if (props.mockData.length > 0) {
-    return false;
-  }
-  return leaderboardStore.getLoading;
-});
-
-const speed = ref(50); // pixels per second
+const speed = ref(20); // pixels per second
 const container = ref(null);
 const ticker = ref(null);
 const ticker2 = ref(null);
 const duration = ref(0);
-
-const setRank = (rank) => {
-  if (rank === 999999) return "🍋";
-  if (rank === 1) return "🥇";
-  if (rank === 2) return "🥈";
-  if (rank === 3) return "🥉";
-  if (rank === 4) return "🏅";
-  if (rank === 5) return "🏅";
-  return `${rank}th: `;
-};
 
 const calculateDuration = async () => {
   console.log("Calculating duration");
@@ -111,24 +126,8 @@ const calculateDuration = async () => {
 };
 
 onMounted(async () => {
-  if (props.mockData.length === 0) {
-    await leaderboardStore.fetchLeaderboard();
-    leaderboardStore.pollLeaderboard();
-  } else {
-    // If mock data is provided, calculate duration immediately
-    await calculateDuration();
-  }
+  await calculateDuration();
 });
-
-watch(
-  leaderboard,
-  async () => {
-    if (!isLoading.value) {
-      await calculateDuration();
-    }
-  },
-  { deep: true }
-);
 </script>
 
 <style scoped>

@@ -1,32 +1,66 @@
+// src/stores/leaderboardStore.js
 import { defineStore } from "pinia";
-import { authenticatedApiCall, handleError } from "../apiService";
+import { io } from "socket.io-client";
 
 export const useLeaderboardStore = defineStore("leaderboard", {
   state: () => ({
-    leaderboard: [],
-    initialLoad: true,
+    leaderboards: {
+      ALL_TIME: [],
+      WEEKLY: [],
+      DAILY_TODAY: [],
+      DAILY_YESTERDAY: [],
+    },
+    isConnected: false,
   }),
+
   getters: {
-    getLeaderboard: (state) => {
-      return state.leaderboard ?? [];
+    bannerPlayers: (state) => {
+      return {
+        ALL_TIME: state.leaderboards.ALL_TIME.slice(0, 3),
+        WEEKLY: state.leaderboards.WEEKLY.slice(0, 3),
+        DAILY_TODAY: state.leaderboards.DAILY_TODAY.slice(0, 3),
+        DAILY_YESTERDAY: state.leaderboards.DAILY_YESTERDAY.slice(0, 3),
+      };
     },
-    getLoading: (state) => {
-      return state.initialLoad;
-    },
+    allTimePlayers: (state) => state.leaderboards.ALL_TIME,
+    weeklyPlayers: (state) => state.leaderboards.WEEKLY,
+    dailyTodayPlayers: (state) => state.leaderboards.DAILY_TODAY,
+    dailyYesterdayPlayers: (state) => state.leaderboards.DAILY_YESTERDAY,
   },
+
   actions: {
-    async fetchLeaderboard() {
-      try {
-        const response = await authenticatedApiCall("GET", "/leaderboard");
-        this.leaderboard = response.data;
-        this.initialLoad = false;
-      } catch (error) {
-        handleError(error);
+    initializeSocket() {
+      this.socket = io("http://localhost:3000", {
+        transports: ["websocket", "polling"],
+      });
+
+      this.socket.on("connect", () => {
+        this.isConnected = true;
+        console.log("Connected to server");
+      });
+
+      this.socket.on("disconnect", () => {
+        this.isConnected = false;
+        console.log("Disconnected from server");
+      });
+
+      this.socket.on("leaderboards_update", (data) => {
+        this.updateLeaderboards(data);
+      });
+    },
+
+    updateLeaderboards(data) {
+      this.leaderboards = data;
+    },
+
+    requestLeaderboardUpdate() {
+      if (this.isConnected) {
+        this.socket.emit("request_leaderboard_update");
       }
     },
-    pollLeaderboard(interval = 30000) {
-      this.fetchLeaderboard();
-      setInterval(() => this.fetchLeaderboard(), interval);
+
+    getLeaderboard(type) {
+      return this.leaderboards[type] || [];
     },
   },
 });

@@ -65,11 +65,11 @@
 
 <script setup>
 import { computed, ref } from "vue";
-import { useUserStore } from "@/stores/user";
+import { useAuthStore } from "@/stores/user";
 import { useModalStore } from "@/stores/modal";
 import { useRoute } from "vue-router";
 import router from "@/router";
-const userStore = useUserStore();
+const authStore = useAuthStore();
 const modalStore = useModalStore();
 const route = useRoute();
 const isAppRoute = computed(() => route.path === "/app");
@@ -77,10 +77,8 @@ const isAppRoute = computed(() => route.path === "/app");
 // const isSubscriptionRoute = computed(() => route.path === '/subscribe');
 const isProfileMenuOpen = ref(false);
 
-const username = computed(() => userStore.userName);
-const icon = computed(() => {
-  return `/images/profile/${userStore.userIcon}.png`;
-});
+const username = computed(() => authStore.getUserName);
+const icon = computed(() => authStore.getUserIcon);
 
 const toggleProfileMenu = () => {
   isProfileMenuOpen.value = !isProfileMenuOpen.value;

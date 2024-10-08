@@ -10,8 +10,8 @@ export const SELLING_POINT = "It's Totally Free!";
 export const CTA_SECONDARY_LINK =
   "https://github.com/sted9000/vue-startup-template";
 export const sites = {
-  "SITE#0": {
-    id: 0,
+  1: {
+    id: 1,
     name: "chumba",
     fullName: "Chumba",
     url: "https://lobby.chumbacasino.com/",
@@ -20,8 +20,8 @@ export const sites = {
     cssColor: "#FF6B6B",
     tailwindColor: "bg-red-400",
   },
-  "SITE#1": {
-    id: 1,
+  2: {
+    id: 2,
     name: "wow",
     fullName: "WowVegas",
     url: "https://wowvegas.com/lobby",
@@ -30,8 +30,8 @@ export const sites = {
     cssColor: "#4ECDC4",
     tailwindColor: "bg-teal-400",
   },
-  "SITE#2": {
-    id: 2,
+  3: {
+    id: 3,
     name: "sportzino",
     fullName: "Sportzino",
     url: "https://sportzino.com/casino-lobby/lobby",
@@ -40,8 +40,8 @@ export const sites = {
     cssColor: "#45B7D1",
     tailwindColor: "bg-blue-400",
   },
-  "SITE#3": {
-    id: 3,
+  4: {
+    id: 4,
     name: "zula",
     fullName: "Zula Casino",
     url: "https://www.zulacasino.com/lobby",
@@ -50,8 +50,8 @@ export const sites = {
     cssColor: "#F7B731",
     tailwindColor: "bg-yellow-400",
   },
-  "SITE#4": {
-    id: 4,
+  5: {
+    id: 5,
     name: "global",
     fullName: "Global Poker",
     url: "https://play.globalpoker.com/",
@@ -60,8 +60,8 @@ export const sites = {
     cssColor: "#A3A1FB",
     tailwindColor: "bg-indigo-400",
   },
-  "SITE#5": {
-    id: 5,
+  6: {
+    id: 6,
     name: "spree",
     fullName: "Spree",
     url: "https://spree.com/slots",
@@ -70,7 +70,7 @@ export const sites = {
     cssColor: "#26DE81",
     tailwindColor: "bg-green-400",
   },
-  "SITE#7": {
+  7: {
     id: 7,
     name: "ding",
     fullName: "DingDingDing",
@@ -80,7 +80,7 @@ export const sites = {
     cssColor: "#FC5C65",
     tailwindColor: "bg-pink-400",
   },
-  "SITE#8": {
+  8: {
     id: 8,
     name: "sweeps",
     fullName: "Sweeps Slots",
@@ -90,7 +90,7 @@ export const sites = {
     cssColor: "#5352ED",
     tailwindColor: "bg-purple-400",
   },
-  "SITE#9": {
+  9: {
     id: 9,
     name: "realprize",
     fullName: "Real Prize",
@@ -100,7 +100,7 @@ export const sites = {
     cssColor: "#2C3E50",
     tailwindColor: "bg-gray-700",
   },
-  "SITE#10": {
+  10: {
     id: 10,
     name: "rolling",
     fullName: "Rolling Riches",
@@ -110,7 +110,7 @@ export const sites = {
     cssColor: "#16A085",
     tailwindColor: "bg-green-600",
   },
-  "SITE#11": {
+  11: {
     id: 11,
     name: "pulsz",
     fullName: "Pulsz",
@@ -120,7 +120,7 @@ export const sites = {
     cssColor: "#8E44AD",
     tailwindColor: "bg-purple-600",
   },
-  "SITE#12": {
+  12: {
     id: 12,
     name: "stackr",
     fullName: "Stackr Casino",
@@ -130,7 +130,7 @@ export const sites = {
     cssColor: "#D35400",
     tailwindColor: "bg-orange-600",
   },
-  "SITE#13": {
+  13: {
     id: 13,
     name: "scratchful",
     fullName: "Scratchful",
@@ -140,7 +140,7 @@ export const sites = {
     cssColor: "#27AE60",
     tailwindColor: "bg-green-500",
   },
-  "SITE#14": {
+  14: {
     id: 14,
     name: "funrize",
     fullName: "Funrize",
@@ -150,7 +150,7 @@ export const sites = {
     cssColor: "#3498DB",
     tailwindColor: "bg-blue-500",
   },
-  "SITE#15": {
+  15: {
     id: 15,
     name: "luckyland",
     fullName: "Luckyland",
@@ -160,7 +160,7 @@ export const sites = {
     cssColor: "#E74C3C",
     tailwindColor: "bg-red-500",
   },
-  "SITE#16": {
+  16: {
     id: 16,
     name: "mcluck",
     fullName: "McLuck",
@@ -170,7 +170,7 @@ export const sites = {
     cssColor: "#9B59B6",
     tailwindColor: "bg-purple-500",
   },
-  "SITE#17": {
+  17: {
     id: 17,
     name: "moonspin",
     fullName: "MoonSpin",
@@ -180,7 +180,7 @@ export const sites = {
     cssColor: "#34495E",
     tailwindColor: "bg-gray-600",
   },
-  "SITE#18": {
+  18: {
     id: 18,
     name: "modo",
     fullName: "Modo",
@@ -190,7 +190,7 @@ export const sites = {
     cssColor: "#1ABC9C",
     tailwindColor: "bg-teal-500",
   },
-  "SITE#19": {
+  19: {
     id: 19,
     name: "golden_hearts",
     fullName: "Golden Hearts",
@@ -200,7 +200,7 @@ export const sites = {
     cssColor: "#F1C40F",
     tailwindColor: "bg-yellow-500",
   },
-  "SITE#20": {
+  20: {
     id: 20,
     name: "high_5",
     fullName: "High 5",
@@ -210,7 +210,7 @@ export const sites = {
     cssColor: "#2980B9",
     tailwindColor: "bg-blue-600",
   },
-  "SITE#21": {
+  21: {
     id: 21,
     name: "stake",
     fullName: "Stake",
@@ -220,7 +220,7 @@ export const sites = {
     cssColor: "#C0392B",
     tailwindColor: "bg-red-700",
   },
-  "SITE#22": {
+  22: {
     id: 22,
     name: "fortune",
     fullName: "Fortune Coins",
@@ -230,7 +230,7 @@ export const sites = {
     cssColor: "#F39C12",
     tailwindColor: "bg-yellow-600",
   },
-  "SITE#23": {
+  23: {
     id: 23,
     name: "crown",
     fullName: "Crown Casino",
@@ -240,7 +240,7 @@ export const sites = {
     cssColor: "#7F8C8D",
     tailwindColor: "bg-gray-500",
   },
-  "SITE#24": {
+  24: {
     id: 24,
     name: "pulszbingo",
     fullName: "Pulsz Bingo",
@@ -250,7 +250,7 @@ export const sites = {
     cssColor: "#9B59B6",
     tailwindColor: "bg-purple-500",
   },
-  "SITE#25": {
+  25: {
     id: 25,
     name: "smiles",
     fullName: "Smiles",
@@ -260,7 +260,7 @@ export const sites = {
     cssColor: "#F1C40F",
     tailwindColor: "bg-yellow-500",
   },
-  "SITE#26": {
+  26: {
     id: 26,
     name: "luckybird",
     fullName: "Lucky Bird",
@@ -270,7 +270,7 @@ export const sites = {
     cssColor: "#E74C3C",
     tailwindColor: "bg-red-500",
   },
-  "SITE#27": {
+  27: {
     id: 27,
     name: "clubspoker",
     fullName: "Clubs Poker",
@@ -280,7 +280,7 @@ export const sites = {
     cssColor: "#8E44AD",
     tailwindColor: "bg-purple-700",
   },
-  "SITE#28": {
+  28: {
     id: 28,
     name: "jackpota",
     fullName: "Jackpota",
@@ -290,7 +290,7 @@ export const sites = {
     cssColor: "#F39C12",
     tailwindColor: "bg-yellow-600",
   },
-  "SITE#29": {
+  29: {
     id: 29,
     name: "megabonanza",
     fullName: "Mega Bonanza",

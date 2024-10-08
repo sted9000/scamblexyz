@@ -21,8 +21,8 @@
           <label class="switch">
             <input
               type="checkbox"
-              :checked="site.enabled"
-              @change="toggleSite(site.SK)"
+              :checked="site.isEnabled"
+              @change="toggleSite(site.siteId)"
             />
             <span class="slider round"></span>
           </label>
@@ -47,15 +47,14 @@ import { useUserStore } from "@/stores/user";
 const userStore = useUserStore();
 const sites = computed(() => userStore.getSites);
 const emit = defineEmits(["close"]);
-
 const changedSites = ref({});
 
 const toggleSite = (siteId) => {
   if (siteId in changedSites.value) {
     delete changedSites.value[siteId];
   } else {
-    changedSites.value[siteId] = !sites.value.find((site) => site.SK === siteId)
-      .enabled;
+    changedSites.value[siteId] = !sites.value.find((site) => site.siteId === siteId)
+      .isEnabled;
   }
 };
 

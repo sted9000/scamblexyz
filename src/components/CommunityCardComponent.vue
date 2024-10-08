@@ -1,43 +1,116 @@
 <template>
-  <div class="h-full flex flex-col bg-gray-100 rounded-lg shadow-md p-4">
-    <h2 class="text-lg font-semibold text-gray-800 flex items-center mb-4">
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5 mr-2"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="purple"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-        />
-      </svg>
-      Request Card Lead Times
-    </h2>
-    <div class="flex-grow bg-white rounded-lg overflow-auto">
-      <div ref="plotContainer" class="h-full w-full"></div>
-    </div>
+  <div class="flex-grow bg-gray-50 rounded-lg overflow-auto m-4 p-4">
+    <div ref="plotContainer" class="h-full w-full"></div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch, onUnmounted } from "vue";
-import { useCardStore } from "@/stores/card";
+import { ref, onMounted, watch, onUnmounted } from "vue";
+// import { useCardStore } from "@/stores/card";
 import * as Plot from "@observablehq/plot";
 import { sites as localSites } from "@/constants";
-
-const cardStore = useCardStore();
+// const cardStore = useCardStore();
 const plotContainer = ref(null);
-const drops = computed(() => cardStore.getDrops);
+// const drops = computed(() => cardStore.getDrops);
+
+const drops = [
+  {
+    SiteId: "SITE#0",
+    DropDate: Date.now() - 1000000000,
+    SentDate: Date.now() - 1200000000,
+  },
+  {
+    SiteId: "SITE#0",
+    DropDate: Date.now() - 2000000000,
+    SentDate: Date.now() - 2300000000,
+  },
+  {
+    SiteId: "SITE#0",
+    DropDate: Date.now() - 3000000000,
+    SentDate: Date.now() - 3400000000,
+  },
+  {
+    SiteId: "SITE#15",
+    DropDate: Date.now() - 4000000000,
+    SentDate: Date.now() - 4500000000,
+  },
+  {
+    SiteId: "SITE#15",
+    DropDate: Date.now() - 5000000000,
+    SentDate: Date.now() - 5600000000,
+  },
+  {
+    SiteId: "SITE#15",
+    DropDate: Date.now() - 6000000000,
+    SentDate: Date.now() - 6700000000,
+  },
+  {
+    SiteId: "SITE#1",
+    DropDate: Date.now() - 7000000000,
+    SentDate: Date.now() - 7800000000,
+  },
+  {
+    SiteId: "SITE#1",
+    DropDate: Date.now() - 8000000000,
+    SentDate: Date.now() - 8900000000,
+  },
+  {
+    SiteId: "SITE#1",
+    DropDate: Date.now() - 9000000000,
+    SentDate: Date.now() - 10000000000,
+  },
+  {
+    SiteId: "SITE#4",
+    DropDate: Date.now() - 10000000000,
+    SentDate: Date.now() - 11100000000,
+  },
+  {
+    SiteId: "SITE#4",
+    DropDate: Date.now() - 11000000000,
+    SentDate: Date.now() - 12200000000,
+  },
+  {
+    SiteId: "SITE#4",
+    DropDate: Date.now() - 12000000000,
+    SentDate: Date.now() - 13300000000,
+  },
+  {
+    SiteId: "SITE#11",
+    DropDate: Date.now() - 13000000000,
+    SentDate: Date.now() - 14400000000,
+  },
+  {
+    SiteId: "SITE#11",
+    DropDate: Date.now() - 14000000000,
+    SentDate: Date.now() - 15500000000,
+  },
+  {
+    SiteId: "SITE#11",
+    DropDate: Date.now() - 15000000000,
+    SentDate: Date.now() - 16600000000,
+  },
+  {
+    SiteId: "SITE#16",
+    DropDate: Date.now() - 16000000000,
+    SentDate: Date.now() - 17700000000,
+  },
+  {
+    SiteId: "SITE#16",
+    DropDate: Date.now() - 17000000000,
+    SentDate: Date.now() - 18800000000,
+  },
+  {
+    SiteId: "SITE#16",
+    DropDate: Date.now() - 18000000000,
+    SentDate: Date.now() - 19900000000,
+  },
+];
 
 const createPlot = () => {
   if (!plotContainer.value) return;
   plotContainer.value.innerHTML = "";
 
-  const formattedDrops = drops.value.map((drop) => ({
+  const formattedDrops = drops.map((drop) => ({
     group: drop.SiteId,
     duration: (drop.DropDate - drop.SentDate) / (7 * 24 * 60 * 60 * 1000),
     imagePath: localSites[drop.SiteId].imagePath,
@@ -45,12 +118,15 @@ const createPlot = () => {
 
   const uniqueGroups = [...new Set(formattedDrops.map((d) => d.group))];
 
+  console.log(uniqueGroups);
+  console.log(formattedDrops);
   const plot = Plot.plot({
     marginLeft: 60,
     marginBottom: 60,
     padding: 0.5,
+    height: 400,
     width: plotContainer.value.clientWidth,
-    height: plotContainer.value.clientHeight,
+    // height: plotContainer.value.clientHeight,
     x: {
       grid: true,
       label: "Credit Time (weeks)",
@@ -74,8 +150,8 @@ const createPlot = () => {
       Plot.image(formattedDrops, {
         y: "group",
         src: "imagePath",
-        width: 30,
-        height: 30,
+        width: 24,
+        height: 24,
         x: 0,
         dx: -30,
       }),
@@ -86,7 +162,7 @@ const createPlot = () => {
 };
 
 onMounted(async () => {
-  await cardStore.fetchDrops();
+  // await cardStore.fetchDrops();
   createPlot();
   window.addEventListener("resize", createPlot);
 });

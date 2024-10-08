@@ -6,76 +6,61 @@
     <div
       class="bg-white rounded-lg p-8 max-w-md w-full max-h-[90vh] overflow-y-auto"
     >
-      <h2 class="text-2xl font-bold mb-4">Record Your Drop</h2>
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Site</label>
-        <div class="flex items-center text-lg font-semibold text-gray-700">
-          <img
-            :src="modalData.image"
-            :alt="modalData.site"
-            class="w-5 h-5 mr-2 opacity-50"
-          />
-          {{ modalData.site }}
-        </div>
-      </div>
-      <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1"
-          >Previously Credited</label
-        >
-        <div class="text-lg font-semibold text-gray-700">
-          {{ modalData.DropCount }} / {{ modalData.SentCount }}
-        </div>
-      </div>
+      <h2 class="text-2xl font-bold mb-4">Track Your Cards</h2>
       <form @submit.prevent="submitPost" class="space-y-4">
         <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2"
+            >Site</label
+          >
           <div class="flex flex-wrap -mx-1">
             <label
-              v-for="site in cardSites"
-              :key="site.value"
+              v-for="site in sites"
+              :key="site.id"
               :class="[
                 'flex items-center px-3 py-1 rounded border text-sm cursor-pointer transition-colors duration-200 m-1',
-                cardSite === site.value
-                  ? `${site.activeClass}`
-                  : `${site.inactiveClass}`,
+                selectedSite === site.id
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-white text-gray-700 hover:bg-gray-100',
               ]"
             >
               <input
                 type="radio"
-                :value="site.value"
-                v-model="cardSite"
+                :value="site.id"
+                v-model="selectedSite"
                 class="hidden"
+                required
               />
-              <img :src="site.image" :alt="site.label" class="w-3 h-3 mr-2" />
-              {{ site.label }}
+              <img
+                :src="site.imagePath"
+                :alt="site.fullName"
+                class="w-3 h-3 mr-2"
+              />
+              {{ site.fullName }}
             </label>
           </div>
         </div>
         <div>
           <label for="cardCount" class="block text-sm font-medium text-gray-700"
-            >How many new cards dropped?</label
+            >How many cards</label
           >
           <input
             type="number"
             id="cardCount"
             v-model="cardCount"
-            :min="1"
-            :max="maxDropCount"
             required
+            min="1"
             class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
           />
-          <p v-if="!isCardCountValid" class="text-red-500 text-sm mt-1">
-            Card count must be between 1 and {{ maxDropCount }}.
-          </p>
         </div>
 
         <div>
           <label for="dateSent" class="block text-sm font-medium text-gray-700"
-            >Date Credited</label
+            >Date Sent</label
           >
           <input
             type="date"
-            id="dateCredited"
-            v-model="dateCredited"
+            id="dateSent"
+            v-model="dateSent"
             required
             class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
           />
@@ -104,8 +89,7 @@
           </button>
           <button
             type="submit"
-            :disabled="!isCardCountValid"
-            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
           >
             Submit
           </button>
@@ -116,49 +100,37 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { computed, ref } from "vue";
 import { useModalStore } from "@/stores/modal";
-import { useCardStore } from "@/stores/card";
+import { usePostcardStore } from "@/stores/postcard";
 import { useUserStore } from "@/stores/user";
 const modalStore = useModalStore();
-const cardStore = useCardStore();
+const postcardStore = usePostcardStore();
 const userStore = useUserStore();
-const dateCredited = ref(new Date().toISOString().substr(0, 10));
-const modalData = computed(() => modalStore.getModalData);
-const cardCount = ref(modalData.value.SentCount - modalData.value.DropCount);
+const cardCount = ref(0);
+const selectedSite = ref(null);
+const dateSent = ref(new Date().toISOString().split("T")[0]);
 const allowAnonymizedData = ref(true);
-const userName = computed(() => userStore.userName);
-
-const maxDropCount = computed(
-  () => modalData.value.SentCount - modalData.value.DropCount
-);
-
-const isCardCountValid = computed(() => {
-  const count = Number(cardCount.value);
-  return count > 0 && count <= maxDropCount.value;
-});
-
+const sites = computed(() => userStore.getPostcardSites);
 const closeModal = () => {
   modalStore.setCloseAllModals();
 };
 
-console.log("modal", modalData.value);
-
 const submitPost = () => {
-  if (!isCardCountValid.value) return;
-
-  const drop = {
-    PK: modalData.value.PK,
-    SK: modalData.value.SK,
-    BatchId: modalData.value.BatchId,
-    SiteId: modalData.value.SiteId,
-    SentDate: modalData.value.DateSent,
-    dropCount: Number(cardCount.value),
-    dropDate: new Date(dateCredited.value).getTime(),
-    userName: userName.value,
+  if (!selectedSite.value || cardCount.value <= 0 || !dateSent.value) {
+    alert("Please fill in all required fields");
+    return;
+  }
+  // turn datetime into date
+  const submissionDate = new Date(dateSent.value);
+  const newPost = {
+    totalCards: cardCount.value,
+    submissionDate,
+    allowShare: allowAnonymizedData.value,
+    siteId: selectedSite.value,
   };
-
-  cardStore.addDrop(drop);
+  // console.log(newPost);
+  postcardStore.addBatch(newPost);
   closeModal();
 };
 </script>
