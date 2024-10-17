@@ -1,4 +1,5 @@
 const { Drop, Batch, BatchDrop } = require("../models");
+const { postcardQueue } = require("../services/postcardLogic");
 
 const postcardController = {
   /* Get Community Drops */
@@ -49,6 +50,15 @@ const postcardController = {
           },
         ],
       });
+
+      // Add the drop to queue
+      postcardQueue.add({
+        dropId: drop.id,
+        dropDate: drop.dropDate,
+        siteId: drop.siteId,
+        source: drop.source,
+      });
+
       res.json(updatedBatch);
     } catch (error) {
       console.error("Error creating drop:", error);

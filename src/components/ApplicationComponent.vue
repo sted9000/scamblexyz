@@ -41,11 +41,14 @@
       </div>
     </header>
 
+    <!-- Main Content -->
     <div class="flex flex-1 overflow-hidden">
+      <!-- Left Sidebar -->
       <nav class="w-56 text-gray-900 hidden md:block custom-scroll">
         <NavMenu @itemSelected="handlePageChange" />
       </nav>
 
+      <!-- Mobile Drawer -->
       <div class="md:hidden">
         <button @click="toggleDrawer" class="p-4">
           <svg
@@ -74,6 +77,7 @@
         </div>
       </div>
 
+      <!-- Main Content -->
       <div class="flex-grow md:w-1/2 lg:w-7/12 custom-scroll">
         <HomeView v-if="currentPage === 'Home'" :title="currentPage" />
         <CheckinView
@@ -100,20 +104,21 @@
           v-else-if="currentPage === 'Reviews'"
           :title="currentPage"
         />
+        <BlogView v-else-if="currentPage === 'Blog'" :title="currentPage" />
         <AboutView v-else-if="currentPage === 'About'" :title="currentPage" />
       </div>
 
-      <div class="w-96 hidden lg:block custom-scroll">
-        <NewsArticlesComponent />
+      <!-- Right Sidebar -->
+      <div v-if="currentPage !== 'Leaderboards' && currentPage !== 'Blog' && currentPage !== 'About'" class="w-96 hidden lg:block custom-scroll">
+        <SideLeaderboard :currentPage="currentPage" />
       </div>
 
+      <!-- Modals -->
       <div
         v-if="modalOpen"
         class="fixed inset-0 bg-black bg-opacity-50 z-40"
       ></div>
-
       <ConfigModal v-if="configModal" @close="handleCloseModal" />
-      <CreatePostModal v-if="createPostModal" @close="handleCloseModal" />
       <EditProfileModal v-if="editProfileModal" @close="handleCloseModal" />
       <NewBatchModal v-if="newBatchModal" @close="handleCloseModal" />
       <AddDropModal v-if="addDropModal" @close="handleCloseModal" />
@@ -123,6 +128,8 @@
       <NewBonusModal v-if="newBonusModal" @close="handleCloseModal" />
     </div>
   </div>
+
+  <!-- Floating Action Buttons -->
   <div class="fixed bottom-4 right-4 flex flex-col space-y-2">
     <button
       @click="modalStore.setOpenModal('newBonus')"
@@ -157,14 +164,14 @@ import PostcardView from "@/components/views/PostcardView.vue";
 import GamesView from "@/components/views/GamesView.vue";
 import LeaderboardView from "@/components/views/LeaderboardView.vue";
 import ReviewView from "@/components/views/ReviewView.vue";
+import BlogView from "@/components/views/BlogView.vue";
 import AboutView from "@/components/views/AboutView.vue";
-import NewsArticlesComponent from "@/components/news/NewsArticlesComponent.vue";
+import SideLeaderboard from "@/components/leaderboards/SideLeaderboard.vue";
 import ConfigModal from "@/components/modals/ConfigModal.vue";
 import NewBatchModal from "@/components/modals/NewBatchModal.vue";
 import AddDropModal from "@/components/modals/AddDropModal.vue";
 import UpdateBatchModal from "@/components/modals/UpdateBatchModal.vue";
 import BatchModal from "@/components/modals/BatchModal.vue";
-import CreatePostModal from "@/components/modals/CreatePostModal.vue";
 import EditProfileModal from "@/components/modals/EditProfileModal.vue";
 import NewBonusModal from "@/components/modals/NewBonusModal.vue";
 import RejectionModal from "@/components/modals/RejectionModal.vue";
@@ -174,7 +181,7 @@ import { useAuthStore } from "@/stores/auth";
 import { useUserStore } from "@/stores/user";
 import { useBonusStore } from "@/stores/bonus";
 import { usePostcardStore } from "@/stores/postcard";
-import { useLeaderboardStore } from "@/stores/leaderboard";
+import { useLeaderboardStore } from "@/stores/realtime";
 import {
   PlusIcon,
   EnvelopeIcon,
@@ -191,9 +198,10 @@ const leaderboardStore = useLeaderboardStore();
 onMounted(() => {
   userStore.fetchUserSites();
   checkinStore.fetchCheckin();
-  bonusStore.fetchCommunityBonus();
-  postcardStore.fetchDrops();
+  // bonusStore.initializeSocket();
   leaderboardStore.initializeSocket();
+  // postcardStore.initializeSocket();
+  // userStore.initializeSocket();
 });
 
 const authStore = useAuthStore();
@@ -205,13 +213,12 @@ const newBatchModal = computed(() => modalStore.getNewBatchModal);
 const addDropModal = computed(() => modalStore.getAddDropModal);
 const updateBatchModal = computed(() => modalStore.getUpdateBatchModal);
 const batchModal = computed(() => modalStore.getBatchModal);
-const createPostModal = computed(() => modalStore.getCreatePostModal);
 const editProfileModal = computed(() => modalStore.getEditProfileModal);
 const newBonusModal = computed(() => modalStore.getNewBonusModal);
 const rejectionModal = computed(() => modalStore.getRejectionModal);
 
 const isDrawerOpen = ref(false);
-const currentPage = ref("Postcards");
+const currentPage = ref("Home");
 const toggleDrawer = () => (isDrawerOpen.value = !isDrawerOpen.value);
 
 const handleCloseModal = () => {

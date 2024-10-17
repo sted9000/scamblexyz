@@ -17,7 +17,7 @@
       <h3 class="font-bold text-lg text-gray-700">
         {{ site.fullName }}
       </h3>
-      <p v-if="itemStatus === 'Available'" class="text-xs text-green-500 -mt-1">
+      <p v-if="itemStatus === 'Available'" class="text-xs text-gray-700 -mt-1">
         Available
       </p>
       <p v-else class="text-xs text-gray-600 -mt-1">{{ itemStatus }}</p>

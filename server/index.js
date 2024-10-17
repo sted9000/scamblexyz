@@ -2,11 +2,13 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const { syncDatabase } = require("./models");
-const { initializeLeaderboards } = require("./leaderboardLogic");
 const http = require("http");
 const { Server } = require("socket.io");
-const { redisClient } = require("./redisConfig");
-const { setupWebSocket } = require("./leaderboardLogic");
+const { setupLeaderboardWebSocket, initializeLeaderboards } = require("./services/leaderboardLogic");
+const { setupPostcardWebSocket } = require("./services/postcardLogic");
+const { setupBonusWebSocket } = require("./services/bonusLogic");
+const { setupCheckinWebSocket } = require("./services/checkinLogic");
+const { setupUserWebSocket } = require("./services/userLogic");
 const {
   authRoutes,
   checkinRoutes,
@@ -34,8 +36,11 @@ app.use("/bonus", bonusRoutes);
 app.use("/postcard", postcardRoutes);
 
 /* Websocket Setup */
-setupWebSocket(io, redisClient);
-
+setupLeaderboardWebSocket(io);
+setupPostcardWebSocket(io);
+setupBonusWebSocket(io);
+setupCheckinWebSocket(io);
+setupUserWebSocket(io);
 /* Start Server (and sync database) */
 async function startServer() {
   await syncDatabase();

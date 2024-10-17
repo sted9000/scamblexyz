@@ -55,6 +55,7 @@ import {
   ChartBarIcon,
   PuzzlePieceIcon,
   QuestionMarkCircleIcon,
+  NewspaperIcon,
 } from "@heroicons/vue/24/outline";
 
 const navItems = ref([
@@ -64,6 +65,7 @@ const navItems = ref([
   { name: "Postcards", icon: EnvelopeIcon, selected: false },
   { name: "Games", icon: PuzzlePieceIcon, selected: false },
   { name: "Leaderboards", icon: ChartBarIcon, selected: false },
+  { name: "Blog", icon: NewspaperIcon, selected: false },
   { name: "About", icon: QuestionMarkCircleIcon, selected: false },
 ]);
 

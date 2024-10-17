@@ -2,7 +2,7 @@
     <ViewHeader :title="props.title" />
     <div class="flex flex-col items-center justify-center h-full">
         <div class="text-2xl font-bold">Coming Soon</div>
-        <div class="text-lg">Log your gameplay, track RTP, and discover the best scambling games!</div>
+        <div class="text-lg">News, articles, and updates about scambling and the sweepstakes casino industry.</div>
     </div>
     
   </template>

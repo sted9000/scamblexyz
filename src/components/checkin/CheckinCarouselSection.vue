@@ -8,7 +8,7 @@
         <div
           v-for="item in items"
           :key="item.SiteId"
-          class="carousel-item px-2"
+          class="carousel-item"
         >
           <CheckinItem
             :item="item"

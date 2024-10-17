@@ -58,7 +58,7 @@
 
 <script setup>
 import { ref, onMounted, nextTick, computed } from "vue";
-import { useLeaderboardStore } from "../stores/leaderboard";
+import { useLeaderboardStore } from "../stores/realtime";
 
 const leaderboardStore = useLeaderboardStore();
 const bannerPlayers = computed(() => {
@@ -66,17 +66,8 @@ const bannerPlayers = computed(() => {
 });
 const leaderboardString = (title, items) => {
   let result = [title];
-  items.forEach((item, index) => {
+  items.forEach((item) => {
     let str = "";
-    if (index === 0) {
-      str += "🥇 ";
-    } else if (index === 1) {
-      str += "🥈 ";
-    } else if (index === 2) {
-      str += "🥉 ";
-    } else {
-      str += "🏅 ";
-    }
     str += `${item.username} (${item.score})`;
     result.push(str);
   });
@@ -86,23 +77,9 @@ const leaderboard = computed(() => {
   if (!bannerPlayers.value) return ["Loading..."];
   let formattedLeaderboard = [];
   formattedLeaderboard.push(
-    ...leaderboardString("All Time Leaders: ", bannerPlayers.value["ALL_TIME"])
+    ...leaderboardString("Yesterday's Winners: ", bannerPlayers.value["ALL_TIME"])
   );
-  formattedLeaderboard.push(
-    ...leaderboardString("Weekly Leaders: ", bannerPlayers.value["WEEKLY"])
-  );
-  formattedLeaderboard.push(
-    ...leaderboardString(
-      "Yesterday's Leaders: ",
-      bannerPlayers.value["DAILY_YESTERDAY"]
-    )
-  );
-  formattedLeaderboard.push(
-    ...leaderboardString(
-      "Today's Leaders: ",
-      bannerPlayers.value["DAILY_TODAY"]
-    )
-  );
+
   return formattedLeaderboard;
 });
 

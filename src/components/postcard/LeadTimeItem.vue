@@ -1,49 +1,59 @@
 <template>
   <div
-    class="flex flex-col bg-gray-100 p-4 rounded-lg transition-transform hover:scale-105 hover:bg-gray-200"
+    class="flex flex-col bg-gray-100 p-6 rounded-lg"
   >
+  
     <div class="flex flex-col">
-      <div class="flex justify-between mb-2">
-      <img
-        :src="siteLogo"
-        alt="Item image"
-        class="w-10 h-10 rounded-full mr-2"
-      />
-
-      <div class="flex">
-        <CheckIcon
-          v-for="i in siteCardRank"
-          :key="i"
-          class="h-5 w-5 text-yellow-500"
-        />
+      <div class="flex justify-between items-start">
+        <div class="flex mb-2">
+          <img
+            :src="siteLogo"
+            alt="Item image"
+            class="w-10 h-10 rounded-full mr-6"
+          />
+          <CheckIcon
+            v-for="i in siteCardRank"
+            :key="i"
+            class="h-5 w-5 text-yellow-500"
+          />
+        </div>
+        <div class="text-xs text-white bg-secondary rounded-md px-2 py-1 h-fit">
+          Dropped Today!
+        </div>
       </div>
-    </div>
       <div class="text-2xl font-bold text-gray-700 mr-2">
           {{ siteName }}
         </div>
-        <div class="text-sm text-gray-700">
-          {{ props.item.leadTime }} since last drop
-        </div>
-        <div class="text-sm text-gray-700">
-          Drops every {{ props.item.leadTime }} weeks
-        </div>
-      <div>
-       
       </div>
-    </div>
-    <div>
-      <div class="text-xs text-gray-500 mt-2">Unconfirmed</div>
-    </div>
+      
+  
+
+      
+        
+<div class="flex flex-col">
+        <div class="flex items-center">
+          <CurrencyDollarIcon v-for="i in cardValue" :key="i" class="h-4 w-4 text-yellow-500 mr-1" />
+        </div>
+        <div class="text-sm font-bold text-gray-700">
+          6 Week Lead Time
+        </div>
+        <!-- <div class="divider my-2"></div> -->
+        <div class="btn bg-white text-gray-500 text-center mt-4">
+          More Info
+        </div>
+      </div>
+    
   </div>
 </template>
 
 <script setup>
 import { defineProps, computed } from "vue";
 import { sites as localSites } from "@/constants";
-import { CheckIcon } from "@heroicons/vue/24/outline";
+import { CheckIcon, CurrencyDollarIcon } from "@heroicons/vue/24/outline";
 const props = defineProps(["item"]);
 const siteName = localSites[props.item.id].fullName;
 const siteLogo = localSites[props.item.id].imagePath;
 const siteCardRank = computed(() => props.item.cardRanking);
+const cardValue = 4;
 </script>
 ```

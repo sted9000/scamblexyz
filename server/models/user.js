@@ -33,10 +33,10 @@ module.exports = (sequelize, DataTypes) => {
 
   User.associate = (models) => {
     User.belongsToMany(models.Bonus, {
-      through: models.ClaimBonus,
+      through: models.BonusClaim,
       foreignKey: "userId",
     });
-    User.hasOne(models.RankedUsers, { foreignKey: "userId" });
+    User.hasOne(models.UserScore, { foreignKey: "userId" });
     User.belongsToMany(models.Site, {
       through: models.UserSites,
       foreignKey: "userId",

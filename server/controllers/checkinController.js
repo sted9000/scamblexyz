@@ -1,8 +1,11 @@
 const { Checkin, CheckinEvent } = require("../models");
-const { leaderboardQueue } = require("../leaderboardLogic");
+const { leaderboardQueue } = require("../services/leaderboardLogic");
+const { checkinQueue } = require("../services/checkinLogic");
 const { sequelize, User } = require("../models");
+const { checkinPoints } = require("../utils/pointsAlgorithms");
 
 const checkinController = {
+  /*** Get all checkins objects for a user ***/
   async getCheckins(req, res) {
     try {
       const checkin = await Checkin.findAll({
@@ -17,7 +20,7 @@ const checkinController = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
-
+  /*** Update a checkin object for a user ***/
   async updateCheckin(req, res) {
     const transaction = await sequelize.transaction();
     const userId = req.user.userId;
@@ -66,7 +69,10 @@ const checkinController = {
         username: checkin.User.username,
         userIcon: checkin.User.userIcon,
         createdAt: checkin.User.createdAt,
+        category: "checkin",
+        value: checkinPoints(checkin.currentStreak),
       });
+      checkinQueue.add();
 
       // 6. Return the updated Checkin record
       res.json(checkin);

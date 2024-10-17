@@ -27,9 +27,9 @@
 
 <script setup>
 import { ref } from "vue";
-import CallToActionComponent from "../components/CallToActionComponent.vue";
-import ScrollingTickerComponent from "../components/ScrollingTickerComponent.vue";
-import AppPreviewComponent from "../components/AppPreviewComponent.vue";
+import CallToActionComponent from "./CallToActionComponent.vue";
+import ScrollingTickerComponent from "../ScrollingTickerComponent.vue";
+import AppPreviewComponent from "./AppPreviewComponent.vue";
 
 const mainDescription = ref(
   "Start Learning Pot Limit Omaha Visually and Intuitively!"

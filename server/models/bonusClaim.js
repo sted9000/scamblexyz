@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  const ClaimBonus = sequelize.define("BonusClaim", {
+  const BonusClaim = sequelize.define("BonusClaim", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: "Users",
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     bonusId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: "Bonuses",
@@ -30,10 +30,10 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
-  ClaimBonus.associate = (models) => {
-    ClaimBonus.belongsTo(models.User, { foreignKey: "userId" });
-    ClaimBonus.belongsTo(models.Bonus, { foreignKey: "bonusId" });
+  BonusClaim.associate = (models) => {
+    BonusClaim.belongsTo(models.User, { foreignKey: "userId" });
+    BonusClaim.belongsTo(models.Bonus, { foreignKey: "bonusId" });
   };
 
-  return ClaimBonus;
+  return BonusClaim;
 };

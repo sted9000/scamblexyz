@@ -33,11 +33,12 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW,
     },
-    confirmedCount: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
+    claimLimit: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "1",
     },
-    disputedCount: {
+    confirmedCount: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
@@ -63,7 +64,7 @@ module.exports = (sequelize, DataTypes) => {
     Bonus.belongsTo(models.User, { foreignKey: "userId" });
     Bonus.belongsTo(models.Site, { foreignKey: "siteId" });
     Bonus.belongsToMany(models.User, {
-      through: models.ClaimBonus,
+      through: models.BonusClaim,
       foreignKey: "bonusId",
     });
   };

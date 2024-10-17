@@ -4,7 +4,7 @@
   >
     <div class="flex justify-between mb-2">
       <img
-        :src="bonusItem.imagePath"
+        :src="props.item.imagePath"
         alt="Item image"
         class="w-10 h-10 rounded-full mr-2"
       />
@@ -19,43 +19,37 @@
     </div>
     <div class="flex-grow">
       <div class="text-2xl font-bold text-gray-700">
-        {{ bonusItem.fullName }}
+        {{ props.item.fullName }}
       </div>
       <p class="font-bold text-2xl text-gray-700">
         {{ bonusAmount }} for {{ amount }}
       </p>
       <p class="font-bold text-lg text-gray-700">{{ bonusType }}</p>
+      <div :class="['inline-flex items-center py-1 px-2 rounded-md', props.item.claimLimit === 'multi' ? 'bg-secondary' : 'bg-gray-500']">
+        <p class="text-xs font-semibold text-white">{{ claimLimit }}</p>
+      </div>
+      
 
+
+    </div>
+    <div class="flex justify-between mt-4 text-gray-500">
       <p class="text-xs text-gray-500">
-        {{
-          new Date(props.item.datetime).toLocaleString("en-US", {
-            month: "short",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-          })
-        }}
+        {{ bonusDate }}
       </p>
-    </div>
-    <div class="flex justify-between mt-4">
-      <div
-        :class="[
-          'text-xs mr-2',
-          props.item.confirmedCount > 0 ? 'text-green-500' : 'text-gray-500',
-        ]"
+      <div class="flex">
+        <div
+        class="text-xs font-bold mr-1"
       >
         {{
-          props.item.confirmedCount > 0
-            ? props.item.confirmedCount + "x Confirmed"
-            : "Unconfirmed"
+          props.item.confirmedCount
         }}
       </div>
-      <div v-if="props.item.disputedCount > 0"
-        class="text-xs mr-2 text-red-500"
-      >
-        {{ props.item.disputedCount }}x Disputed
+        <CheckCircleIcon class="h-4 w-4" />
       </div>
+    
     </div>
+
+    
 
     <!-- Hover buttons -->
     <div
@@ -71,13 +65,7 @@
         @click="confirmBonus"
         class="px-3 py-1 bg-green-500 text-white rounded my-1 hover:bg-green-600 transition-colors"
       >
-        Confirm
-      </button>
-      <button
-        @click="showDetails"
-        class="px-3 py-1 bg-gray-500 text-white rounded my-1 hover:bg-gray-600 transition-colors"
-      >
-        Dispute
+        Record
       </button>
     </div>
   </div>
@@ -85,10 +73,9 @@
 
 <script setup>
 import { defineProps, computed } from "vue";
-import { CurrencyDollarIcon } from "@heroicons/vue/20/solid";
+import { CurrencyDollarIcon, CheckCircleIcon} from "@heroicons/vue/20/solid";
 import { useBonusStore } from "@/stores/bonus";
-import { sites as localSites } from "@/constants";
-// import { useModalStore } from "@/stores/modal";
+
 
 const bonusStore = useBonusStore();
 // const modalStore = useModalStore();
@@ -100,18 +87,14 @@ const props = defineProps({
   },
 });
 
-const bonusItem = computed(() => {
-  return { ...props.item, ...localSites[props.item.siteId] };
-});
-
-const amount = Math.round(bonusItem.value.amount).toLocaleString("en-US", {
+const amount = Math.round(props.item.amount).toLocaleString("en-US", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 0,
   maximumFractionDigits: 0,
 });
 
-const bonusAmount = Math.round(bonusItem.value.bonusAmount).toLocaleString(
+const bonusAmount = Math.round(props.item.bonusAmount).toLocaleString(
   "en-US",
   {
     style: "currency",
@@ -122,29 +105,39 @@ const bonusAmount = Math.round(bonusItem.value.bonusAmount).toLocaleString(
 );
 
 const bonusType = computed(() => {
-  if (bonusItem.value.bonusType === "deposit") return "Deposit Bonus";
-  if (bonusItem.value.bonusType === "signup") return "Signup Bonus";
-  if (bonusItem.value.bonusType === "happyhour") return "Happy Hour Bonus";
-  if (bonusItem.value.bonusType === "other") return "Other Bonus";
+  if (props.item.bonusType === "deposit") return "Deposit Bonus";
+  if (props.item.bonusType === "signup") return "Signup Bonus";
+  if (props.item.bonusType === "happyhour") return "Happy Hour Bonus";
+  if (props.item.bonusType === "other") return "Other Bonus";
   return "Unknown Bonus";
 });
 
+const bonusDate = computed(() => {
+  return new Date(props.item.datetime).toLocaleString("en-US", {
+    month: "short", day: "numeric", hour: "numeric", minute: "numeric"
+  });
+});
+
+const claimLimit = computed(() => {
+  if (props.item.claimLimit === 'multi') return "Multi-Claim";
+  return `Single Claim`;
+});
+
 const currencyIconCount = computed(() => {
-  if (bonusItem.value.bonusAmount > 50) return 3;
-  if (bonusItem.value.bonusAmount > 20) return 2;
+  if (props.item.bonusAmount > 50) return 3;
+  if (props.item.bonusAmount > 20) return 2;
   return 1;
 });
 
 // Methods for button actions
 const launchBonus = () => {
-  window.open(bonusItem.value.url, "_blank");
+  window.open(props.item.url, "_blank");
 };
 
 const confirmBonus = () => {
-  bonusStore.updateBonus(bonusItem.value.id);
+  console.log("Confirming bonus", props.item.id);
+  bonusStore.updateBonus(props.item.id, {isConfirmed: true});
 };
 
-// const showDetails = () => {
-//   modalStore.openModal("BonusDetails", { bonus: props.item });
-// };
+
 </script>

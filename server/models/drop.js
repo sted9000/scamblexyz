@@ -20,6 +20,12 @@ module.exports = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    source: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      enum: ["user", "reddit", "discord", "admin"],
+      defaultValue: "user",
+    },
     siteId: {
       type: DataTypes.INTEGER,
       allowNull: false,

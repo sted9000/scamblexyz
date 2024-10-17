@@ -8,6 +8,8 @@
     >
       <h2 class="text-2xl font-bold mb-4">Add a Bonus</h2>
       <form @submit.prevent="handleSubmit" class="space-y-4">
+
+        <!-- Select Site -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2"
             >Site</label
@@ -39,6 +41,8 @@
             </label>
           </div>
         </div>
+
+        <!-- Purchase Price -->
         <div>
           <label for="cardCount" class="block text-sm font-medium text-gray-700"
             >Purchase Price</label
@@ -53,6 +57,7 @@
           />
         </div>
 
+        <!-- Amount Credited -->
         <div>
           <label for="cardCount" class="block text-sm font-medium text-gray-700"
             >Amount Credited</label
@@ -67,6 +72,7 @@
           />
         </div>
 
+        <!-- Bonus Type -->
         <div>
           <label for="bonusType" class="block text-sm font-medium text-gray-700"
             >Bonus Type</label
@@ -84,6 +90,22 @@
           </select>
         </div>
 
+        <!-- Claim Limit -->
+        <div>
+          <label for="claimLimit" class="block text-sm font-medium text-gray-700">Claim Limit</label>
+        
+        <select
+          id="claimLimit"
+          v-model="selectedClaimLimit"
+          required
+          class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 p-2"
+        >
+          <option value="1">Single Claim</option>
+          <option value="multi">Multi-Claim</option>
+          </select>
+        </div>
+
+        <!-- Allow Anonymized Data -->
         <div class="flex items-center space-x-2">
           <input
             type="checkbox"
@@ -98,6 +120,8 @@
             >Learn more</a
           >
         </div>
+
+        <!-- Submit/Cancel -->
         <div class="flex justify-end space-x-2">
           <button
             type="button"
@@ -131,6 +155,7 @@ const selectedSite = ref(null);
 const amount = ref(0);
 const bonusAmount = ref(0);
 const selectedBonusType = ref("deposit");
+const selectedClaimLimit = ref("1");
 const sites = Object.values(localSites);
 const allowAnonymizedData = ref(true);
 
@@ -148,6 +173,7 @@ const handleSubmit = () => {
     amount: amount.value,
     bonusAmount: bonusAmount.value,
     bonusType: selectedBonusType.value,
+    claimLimit: selectedClaimLimit.value,
     allowShare: allowAnonymizedData.value,
   });
   closeModal();

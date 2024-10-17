@@ -41,8 +41,8 @@ const handleBatchModal = (batchId) => {
 <template>
   <SectionHeader title="Postcard History" :icon="CreditCardIcon" />
   <div class="flex justify-center mb-8">
-    <table class="table table-sm custom-zebra table-no-dividers">
-      <thead class="text-center">
+    <table class="table table-sm custom-zebra table-no-dividers mx-4">
+      <thead class="">
         <tr>
           <th>Site</th>
           <th>Batch Size</th>
@@ -51,10 +51,10 @@ const handleBatchModal = (batchId) => {
           <th>{{ " " }}</th>
         </tr>
       </thead>
-      <tbody class="text-center">
+      <tbody class="">
         <tr v-for="batch in batches" :key="batch.id">
           <td>
-            <div class="flex items-center justify-center space-x-3">
+            <div class="flex items-center space-x-3">
               <div class="avatar">
                 <div class="mask mask-squircle w-4 h-4">
                   <img
@@ -67,7 +67,9 @@ const handleBatchModal = (batchId) => {
                 <div class="font-bold">{{ batchSiteName(batch.siteId) }}</div>
               </div>
             </div>
-          </td>
+
+
+         </td>
           <td>{{ batch.totalCards }}</td>
           <td>{{ new Date(batch.submissionDate).toLocaleDateString() }}</td>
           <td>{{ batchStatus(batch) }}</td>
@@ -76,9 +78,6 @@ const handleBatchModal = (batchId) => {
               <button class="btn btn-sm" @click="handleAddDrop(batch.id)">
                 <ArrowDownIcon class="w-3 h-3" />
               </button>
-              <!-- <button class="btn btn-sm" @click="handleEditBatch(batch.id)">
-                <PencilIcon class="w-3 h-3" />
-              </button> -->
               <button class="btn btn-sm" @click="handleBatchModal(batch.id)">
                 <EllipsisHorizontalIcon class="w-3 h-3" />
               </button>

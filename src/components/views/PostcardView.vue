@@ -9,12 +9,32 @@
       <div class="carousel-item">
         <div class="carousel-item stats ml-4 bg-gray-100 text-gray-700">
           <div className="stat">
-            <div className="stat-title text-gray-700">Total Sent</div>
+            <div className="stat-title text-gray-700">Total</div>
             <div className="stat-value text-secondard flex items-center">
               <EnvelopeIcon class="h-8 w-8 mr-2 text-accent" />
-              <div class="stat-value text-accent">52</div>
+              <div class="stat-value text-accent">{{postcardStore.getTotalCards}}</div>
             </div>
-            <div className="stat-desc">24 Sent This Week</div>
+          </div>
+          <div className="stat">
+            <div className="stat-title text-gray-700">Credited</div>
+            <div className="stat-value text-secondard flex items-center">
+              <EnvelopeOpenIcon class="h-8 w-8 mr-2 text-accent" />
+              <div class="stat-value text-accent">{{postcardStore.getTotalCreditedCards}}</div>
+            </div>
+          </div>
+          <div className="stat">
+            <div className="stat-title text-gray-700">Pending</div>
+            <div className="stat-value text-accent flex items-center">
+              <ClockIcon class="h-8 w-8 mr-2 " />
+              <div class="stat-value">{{ postcardStore.getTotalPendingCards }}</div>
+            </div>
+          </div>
+          <div className="stat">
+            <div className="stat-title text-gray-700">Denied</div>
+            <div className="stat-value text-accent flex items-center">
+              <TrashIcon class="h-8 w-8 mr-2" />
+              <div class="stat-value"> {{ postcardStore.getTotalRejectedCards }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -27,13 +47,8 @@
               <ArrowUpIcon class="h-8 w-8 mr-2 text-accent" />
               <div class="stat-value text-accent">1350</div>
             </div>
-            <div className="stat-desc">24 Earned Yesterday</div>
+            <div className="stat-desc">24 Points Earned Today</div>
           </div>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-        <div class="carousel-item stats ml-4 bg-gray-100 text-gray-700">
           <div className="stat">
             <div className="stat-title text-gray-700">Community Rank</div>
             <div className="stat-value text-secondard flex items-center">
@@ -45,52 +60,12 @@
         </div>
       </div>
 
-      <div class="carousel-item">
-        <div class="carousel-item stats ml-4 bg-gray-100 text-gray-700">
-          <div className="stat">
-            <div className="stat-title text-gray-700">Credited</div>
-            <div className="stat-value text-secondard flex items-center">
-              <EnvelopeOpenIcon class="h-8 w-8 mr-2 text-accent" />
-              <div class="stat-value text-accent">52</div>
-            </div>
-            <div className="stat-desc">75% Credited</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="carousel-item">
-        <div class="carousel-item stats ml-4 bg-gray-100 text-gray-700">
-          <div className="stat">
-            <div className="stat-title text-gray-700">Outstanding</div>
-            <div className="stat-value text-accent flex items-center">
-              <ClockIcon class="h-8 w-8 mr-2 " />
-              <div class="stat-value">10</div>
-            </div>
-            <div className="stat-desc">10% Outstanding</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="carousel-item">
-        <div class="carousel-item stats ml-4 bg-gray-100 text-gray-700">
-          <div className="stat">
-            <div className="stat-title text-gray-700">Denied</div>
-            <div className="stat-value text-accent flex items-center">
-              <TrashIcon class="h-8 w-8 mr-2" />
-              <div class="stat-value">2</div>
-            </div>
-            <div className="stat-desc">5% Denied</div>
-          </div>
-        </div>
-      </div>
       
     </div>
   </div>
-  
 
-
-  <!-- Drops Section -->
-  <LatestDropCarouselSection />
+  <!-- Drops Section
+  <LatestDropCarouselSection /> -->
 
   <!-- Lead Times Section -->
   <SectionHeader title="Site Info" />
@@ -117,7 +92,6 @@
 <script setup>
 import ViewHeader from "@/components/headers/ViewHeader.vue";
 import SectionHeader from "@/components/headers/SectionHeader.vue";
-import LatestDropCarouselSection from "@/components/postcard/LatestDropCarouselSection.vue";
 import LeadTimeItem from "@/components/postcard/LeadTimeItem.vue";
 import PostcardTable from "@/components/postcard/PostcardTable.vue";
 import { usePostcardStore } from "@/stores/postcard";

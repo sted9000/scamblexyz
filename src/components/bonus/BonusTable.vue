@@ -3,7 +3,7 @@ import { computed } from "vue";
 import { sites as localSites } from "@/constants";
 import { useBonusStore } from "@/stores/bonus";
 import SectionHeader from "@/components/headers/SectionHeader.vue";
-import { CreditCardIcon } from "@heroicons/vue/24/outline";
+import { CreditCardIcon, TrashIcon } from "@heroicons/vue/24/outline";
 const bonusStore = useBonusStore();
 const userBonuses = computed(() => bonusStore.getUserBonus);
 const siteImage = (siteId) => {
@@ -12,24 +12,39 @@ const siteImage = (siteId) => {
 const siteName = (siteId) => {
   return localSites[siteId].fullName;
 };
+const formatBonusType = (type) => {
+  switch (type) {
+    case 'deposit':
+      return 'Deposit Bonus';
+    case 'happyhour':
+      return 'Happy Hour Bonus';
+    case 'signup':
+      return 'Signup Bonus';
+    default:
+      return type;
+  }
+};
+
 </script>
 
 <template>
-  <SectionHeader title="Bonus History" :icon="CreditCardIcon" />
-  <div class="h-[440px] m-4">
+  <SectionHeader title="My Bonus History" :icon="CreditCardIcon" />
+  <div class="h-[440px] mx-4">
     <table class="table table custom-zebra table-no-dividers">
       <thead>
         <tr>
           <th>Site</th>
           <th>Amount</th>
           <th>Bonus Amount</th>
+          <th>Type</th>
           <th>Date</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="bonus in userBonuses" :key="bonus.siteId">
           <td>
-            <div class="flex space-x-3">
+            <div class="flex space-x-3 items-center">
               <div class="avatar">
                 <div class="mask mask-squircle w-4 h-4">
                   <img :src="siteImage(bonus.Bonus.siteId)" :alt="siteName(bonus.Bonus.siteId)" />
@@ -42,7 +57,12 @@ const siteName = (siteId) => {
           </td>
           <td>${{ bonus.Bonus.amount }}</td>
           <td>${{ bonus.Bonus.bonusAmount }}</td>
+          <td>{{ formatBonusType(bonus.Bonus.bonusType) }}</td>
           <td>{{ new Date(bonus.Bonus.createdAt).toLocaleDateString() }}</td>
+          <!-- Delete button (trash icon)-->
+          <td>
+            <TrashIcon class="h-4 w-4 text-gray-500" />
+          </td>
         </tr>
       </tbody>
     </table>

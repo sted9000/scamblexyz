@@ -12,18 +12,15 @@ const DropModel = require("./drop");
 const BatchDropModel = require("./batchdrop");
 const LeaderboardModel = require("./leaderboard");
 const CheckinEventModel = require("./checkinEvent");
-const ClaimBonusModel = require("./claimBonus");
+const BonusClaimModel = require("./bonusClaim");
 const UserSitesModel = require("./userSites");
-const {
-  UserScoreModel,
-  RankedUsersModel,
-  createRankedUsersView,
-} = require("./userScore");
+const BonusEventModel = require("./bonusEvent");
+const UserScoreModel = require("./userScore");
 
 // Create a new Sequelize instance
 const sequelize = new Sequelize({
   dialect: "sqlite",
-  storage: "./database.sqlite",
+  storage: "./database/database.sqlite",
 });
 
 // Initialize the models
@@ -36,10 +33,10 @@ const Drop = DropModel(sequelize, DataTypes);
 const BatchDrop = BatchDropModel(sequelize, DataTypes);
 const Leaderboard = LeaderboardModel(sequelize, DataTypes);
 const UserScore = UserScoreModel(sequelize, DataTypes);
-const RankedUsers = RankedUsersModel(sequelize, DataTypes);
 const CheckinEvent = CheckinEventModel(sequelize, DataTypes);
-const ClaimBonus = ClaimBonusModel(sequelize, DataTypes);
+const BonusClaim = BonusClaimModel(sequelize, DataTypes);
 const UserSites = UserSitesModel(sequelize, DataTypes);
+const BonusEvent = BonusEventModel(sequelize, DataTypes);
 // Call the associate function for each model
 const models = {
   User,
@@ -51,10 +48,10 @@ const models = {
   BatchDrop,
   Leaderboard,
   UserScore,
-  RankedUsers,
   CheckinEvent,
-  ClaimBonus,
+  BonusClaim,
   UserSites,
+  BonusEvent,
 };
 Object.values(models).forEach((model) => {
   if (model.associate) {
@@ -233,11 +230,18 @@ async function syncDatabase() {
       if (created) {
         await userRecord.save;
         // Create or update UserScore for each user
+        const checkinScore = Math.floor(Math.random() * 1000);
+        const bonusScore = Math.floor(Math.random() * 1000);
+        const postcardScore = Math.floor(Math.random() * 1000);
+        const overallScore = checkinScore + bonusScore + postcardScore;
         await UserScore.findOrCreate({
           where: { userId: userRecord.id },
           defaults: {
             userId: userRecord.id,
-            score: Math.floor(Math.random() * 1000), // Random score between 0 and 999
+            overallScore: overallScore,
+            checkinScore: checkinScore,
+            bonusScore: bonusScore,
+            postcardScore: postcardScore,
           },
         });
       }
@@ -251,8 +255,6 @@ async function syncDatabase() {
       });
     }
 
-    // Create the ranked users view
-    await createRankedUsersView(sequelize);
   } catch (error) {
     console.error("Unable to sync the database:", error);
   }

@@ -22,7 +22,7 @@
             <input
               type="checkbox"
               :checked="site.isEnabled"
-              @change="toggleSite(site.siteId)"
+              @change="toggleSite(site.id)"
             />
             <span class="slider round"></span>
           </label>
@@ -49,7 +49,8 @@ const sites = computed(() => userStore.getSites);
 const emit = defineEmits(["close"]);
 const changedSites = ref({});
 
-const toggleSite = (siteId) => {
+const toggleSite = (id) => {
+  const siteId = sites.value.find((site) => site.id === id).siteId;
   if (siteId in changedSites.value) {
     delete changedSites.value[siteId];
   } else {
