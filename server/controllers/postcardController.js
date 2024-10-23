@@ -1,5 +1,5 @@
 const { Drop, Batch, BatchDrop } = require("../models");
-const { postcardQueue } = require("../services/postcardLogic");
+const {postcardQueue} = require("../queues/postcardQueue");
 
 const postcardController = {
   /* Get Community Drops */

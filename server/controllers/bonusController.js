@@ -1,9 +1,8 @@
 const { Bonus, BonusClaim, BonusEvent, sequelize } = require("../models");
-const { bonusQueue } = require("../services/bonusLogic");
 const { bonusPoints } = require("../utils/pointsAlgorithms");
-const { leaderboardQueue } = require("../services/leaderboardLogic");
-const { userQueue } = require("../services/userLogic");
-const { calculateBonus } = require("../utils/calculateBonus");
+const { leaderboardQueue } = require("../queues/leaderboardQueue")
+const { bonusQueue } = require("../queues/bonusQueue")
+// const { calculateBonus } = require("../utils/calculateBonus");
 
 const bonusController = {
 
@@ -41,6 +40,7 @@ const bonusController = {
           amount: req.body.amount,
           claimLimit: req.body.claimLimit,
         },
+        attributes: { exclude: ['userId'] },
       });
 
       // If the bonus exists...
@@ -62,15 +62,15 @@ const bonusController = {
 
         // Update realtime dbs
         bonusQueue.add(bonus);
-        userQueue.add({ userId: req.user.userId, change: calculateBonus(bonus) });
-        leaderboardQueue.add({
-          userId: req.user.userId,
-          username: req.user.username,
-          userIcon: req.user.userIcon,
-          createdAt: req.user.createdAt,
-          category: 'bonus',
-          value: bonusPoints(bonus),
-        });
+        // userQueue.add({ userId: req.user.userId, change: calculateBonus(bonus) });
+        // leaderboardQueue.add({
+        //   userId: req.user.userId,
+        //   username: req.user.username,
+        //   userIcon: req.user.userIcon,
+        //   createdAt: req.user.createdAt,
+        //   category: 'bonus',
+        //   value: bonusPoints(bonus),
+        // });
 
         // Return the claimBonus to the user
         res.json(claimBonus);
@@ -101,7 +101,7 @@ const bonusController = {
 
       // Update the bonus in the cache
       bonusQueue.add(result.bonus);
-      userQueue.add({ userId: req.user.userId, change: calculateBonus(result.bonus) });
+      // userQueue.add({ userId: req.user.userId, change: calculateBonus(result.bonus) });
 
       // Update the leaderboard with one point for the bonus
       leaderboardQueue.add({
@@ -118,6 +118,21 @@ const bonusController = {
 
     } catch (error) {
       console.error("Error creating bonus:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  /*** Delete a bonus ***/
+  async deleteBonus(req, res) {
+    const { id } = req.params;
+    try {
+      await BonusClaim.destroy({ where: { id } });
+
+      // Todo: Delete the Bonus Event and update the realtime dbs
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting bonus:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   },
@@ -164,7 +179,7 @@ const bonusController = {
 
       // Update the realtime dbs
       bonusQueue.add(bonus);
-      userQueue.add({ userId: req.user.userId, change: calculateBonus(bonus) });
+      // userQueue.add({ userId: req.user.userId, change: calculateBonus(bonus) });
       leaderboardQueue.add({
         userId: req.user.userId,
         username: req.user.username,

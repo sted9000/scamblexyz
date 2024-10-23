@@ -12,8 +12,8 @@ const checkinPoints = (streak) => {
   }
 }
 
-// Bonus points are currently 1 point for each bonus you post or log...
-// ... and 10 points if you post a bonus and it is logged by the another user
+// A dollar is work 1 point
+// 100 points if someone else logs your bonus
 const bonusPoints = (bonus) => {
   if (bonus.confirmedCount <= 1 ) {
     return 10;

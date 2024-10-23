@@ -6,28 +6,6 @@
       <div class="text-2xl font-bold animated-text">{{ APP_NAME }}</div>
       <ScrollingTickerComponent class="flex-grow mx-4" />
       <div class="flex items-center">
-        <button @click="modalStore.setOpenModal('config')" class="mr-4">
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            ></path>
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            ></path>
-          </svg>
-        </button>
         <button @click="modalStore.setOpenModal('editProfile')" class="w-6 h-6">
           <img
             :src="`/images/profile/${userIcon}.png`"
@@ -104,12 +82,12 @@
           v-else-if="currentPage === 'Reviews'"
           :title="currentPage"
         />
-        <BlogView v-else-if="currentPage === 'Blog'" :title="currentPage" />
+        <ConfigView v-else-if="currentPage === 'Config'" :title="currentPage" />
         <AboutView v-else-if="currentPage === 'About'" :title="currentPage" />
       </div>
 
       <!-- Right Sidebar -->
-      <div v-if="currentPage !== 'Leaderboards' && currentPage !== 'Blog' && currentPage !== 'About'" class="w-96 hidden lg:block custom-scroll">
+      <div v-if="currentPage !== 'Leaderboards' && currentPage !== 'About'" class="w-96 hidden lg:block custom-scroll">
         <SideLeaderboard :currentPage="currentPage" />
       </div>
 
@@ -164,7 +142,7 @@ import PostcardView from "@/components/views/PostcardView.vue";
 import GamesView from "@/components/views/GamesView.vue";
 import LeaderboardView from "@/components/views/LeaderboardView.vue";
 import ReviewView from "@/components/views/ReviewView.vue";
-import BlogView from "@/components/views/BlogView.vue";
+import ConfigView from "@/components/views/ConfigView.vue";
 import AboutView from "@/components/views/AboutView.vue";
 import SideLeaderboard from "@/components/leaderboards/SideLeaderboard.vue";
 import ConfigModal from "@/components/modals/ConfigModal.vue";
@@ -179,9 +157,7 @@ import { useModalStore } from "@/stores/modal";
 import { APP_NAME } from "@/constants";
 import { useAuthStore } from "@/stores/auth";
 import { useUserStore } from "@/stores/user";
-import { useBonusStore } from "@/stores/bonus";
-import { usePostcardStore } from "@/stores/postcard";
-import { useLeaderboardStore } from "@/stores/realtime";
+import { useRealtimeStore } from "@/stores/realtime";
 import {
   PlusIcon,
   EnvelopeIcon,
@@ -192,16 +168,11 @@ import {
 import { useCheckinStore } from "@/stores/checkin";
 const checkinStore = useCheckinStore();
 const userStore = useUserStore();
-const bonusStore = useBonusStore();
-const postcardStore = usePostcardStore();
-const leaderboardStore = useLeaderboardStore();
+const realtimeStore = useRealtimeStore();
 onMounted(() => {
   userStore.fetchUserSites();
   checkinStore.fetchCheckin();
-  // bonusStore.initializeSocket();
-  leaderboardStore.initializeSocket();
-  // postcardStore.initializeSocket();
-  // userStore.initializeSocket();
+  realtimeStore.initializeSocket();
 });
 
 const authStore = useAuthStore();

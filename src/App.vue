@@ -14,24 +14,14 @@
         <router-view></router-view>
       </div>
     </main>
-    <!-- <FooterComponent /> -->
   </div>
 </template>
 
 <script setup>
-// import HeaderComponent from "./components/HeaderComponent.vue";
-// import FooterComponent from "./components/FooterComponent.vue";
 import { computed } from "vue";
 import { useUserStore } from "@/stores/user";
-
 const userStore = useUserStore();
 const isLoading = computed(
   () => userStore.getIsLoading || userStore.getIsLoggingOut
 );
 </script>
-
-<style>
-body {
-  background-color: #f9fafb;
-}
-</style>

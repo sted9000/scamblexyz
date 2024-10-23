@@ -1,8 +1,8 @@
 // src/stores/leaderboardStore.js
 import { defineStore } from "pinia";
 import { io } from "socket.io-client";
-
-export const useLeaderboardStore = defineStore("leaderboard", {
+import { sites as localSites } from "@/constants";
+export const useRealtimeStore = defineStore("realtime", {
   state: () => ({
     /*** Leaderboards ***/
     OVERALL_ALLTIME: [],
@@ -23,6 +23,7 @@ export const useLeaderboardStore = defineStore("leaderboard", {
     POSTCARD_TODAY: [],
 
     /*** User ***/
+    // AllTime
     userOverallScore: 0,
     userCheckinScore: 0,
     userBonusScore: 0,
@@ -32,10 +33,19 @@ export const useLeaderboardStore = defineStore("leaderboard", {
     userBonusRank: 0,
     userPostcardRank: 0,
 
+    // Today
+    userOverallTodayScore: 0,
+    userCheckinTodayScore: 0,
+    userBonusTodayScore: 0,
+    userPostcardTodayScore: 0,
+
     /*** Community ***/  
     todaysCheckins: 0,
     yesterdaysCheckins: 0,
-
+    drops: [],
+    communityBonus: [],
+    numberOfBonuses: 0,
+    numberOfDropsToday: 0,
     /*** Connection ***/
     isConnected: false,
 
@@ -58,21 +68,37 @@ export const useLeaderboardStore = defineStore("leaderboard", {
     postcardYesterday: (state) => state.POSTCARD_YESTERDAY,
     postcardToday: (state) => state.POSTCARD_TODAY,
 
+    // get yesterdays leaderboard winner
+    getYesterdaysLeaderboardWinner: (state) => {
+      return state.OVERALL_YESTERDAY.find((user) => user.rank === 1)
+    },
+
+    // get number of bonuses
+    getNumberOfBonuses: (state) => {
+      return state.numberOfBonuses;
+    },
+
     // get user rank
-    getUserRank: (state) => {
-      return state.userOverallRank;
+    getUserRank: (state) => (category) => {
+      if (!state[`user${category}Rank`]) {
+        return 'Hmmm';
+      }
+      return state[`user${category}Rank`];
     },
 
     // get user score
-    getUserScore: (state) => {
-      return state.userOverallScore;
+    getUserScore: (state) => (category) => {
+      return state[`user${category}Score`];
     },
 
-    // get user points behind
-    // getUserPointsBehind: (state) => {
-    //   const otherScore = state.OVERALL_ALLTIME[state.userRank].score || 0; 
-    //   return otherScore - state.userScore;
-    // },
+    getLeaderboardScoreByRank: (state) => (rank, category) => {
+      return state[`${category}_ALLTIME`][rank].score;
+    },
+
+    // get user today score
+    getUserTodayScore: (state) => (category) => {
+      return state[`user${category}TodayScore`];
+    },
 
     // get todays checkins
     getTodaysCheckins: (state) => {
@@ -84,12 +110,31 @@ export const useLeaderboardStore = defineStore("leaderboard", {
       return state.yesterdaysCheckins;
     },
 
-    // get yesterdays leaderboard winner
-    getYesterdaysLeaderboardWinner: (state) => {
-      return state.OVERALL_YESTERDAY.find((user) => user.rank === 1);
+    // get drops
+    getDrops: (state) => {
+      return state.drops.map((drop) => {
+        return {
+          ...drop,
+          ...localSites[drop.siteId],
+        };
+      });
     },
 
+    // get number of drops today
+    getNumberOfDropsToday: (state) => {
+      return state.drops.filter((drop) => drop.dropDate.includes(new Date().toISOString().split("T")[0])).length;
+    },
 
+    // get community bonuses
+    getCommunityBonuses: (state) => {
+      // Community bonuses that were added today
+      return state.communityBonus
+        .map((bonus) => ({
+          ...bonus,
+          ...localSites[bonus.siteId],
+          id: bonus.id,
+        }));
+    },
 
   },
   actions: {
@@ -112,68 +157,54 @@ export const useLeaderboardStore = defineStore("leaderboard", {
         console.log("Disconnected from server");
       });
 
-      this.socket.on("leaderboards_update", (data) => {
-        console.log("Leaderboards updated", data);
-        this.updateLeaderboards(data);
+      this.socket.on("leaderboards-update", (data) => {
+        this.OVERALL_ALLTIME = data.overall.all_time;
+        this.OVERALL_WEEKLY = data.overall.weekly;
+        this.OVERALL_YESTERDAY = data.overall.yesterday;
+        this.OVERALL_TODAY = data.overall.today;
+        this.CHECKIN_ALLTIME = data.checkin.all_time;
+        this.CHECKIN_WEEKLY = data.checkin.weekly;
+        this.CHECKIN_YESTERDAY = data.checkin.yesterday;
+        this.CHECKIN_TODAY = data.checkin.today;
+        this.BONUS_ALLTIME = data.bonus.all_time;
+        this.BONUS_WEEKLY = data.bonus.weekly;
+        this.BONUS_YESTERDAY = data.bonus.yesterday;
+        this.BONUS_TODAY = data.bonus.today;
+        this.POSTCARD_ALLTIME = data.postcard.all_time;
+        this.POSTCARD_WEEKLY = data.postcard.weekly;
+        this.POSTCARD_YESTERDAY = data.postcard.yesterday;
+        this.POSTCARD_TODAY = data.postcard.today;
       });
 
-      this.socket.on("user_leaderboard_update", (data) => {
-        console.log("User leaderboard updated", data);
-        this.updateUserLeaderboard(data);
-      });
-
-      this.socket.on("request_checkins", (data) => {
-        console.log("Request checkins", data);
-        this.updateCheckins(data);
+      this.socket.on("user-leaderboard-update", (data) => {
+        // AllTime
+        this.userOverallScore = data.userOverallScore;
+        this.userOverallRank = data.userOverallRank;
+        this.userCheckinScore = data.userCheckinScore;
+        this.userCheckinRank = data.userCheckinRank;
+        this.userBonusScore = data.userBonusScore;
+        this.userBonusRank = data.userBonusRank;
+        this.userPostcardScore = data.userPostcardScore;
+        this.userPostcardRank = data.userPostcardRank;
+        // Today
+        this.userOverallTodayScore = data.userOverallTodayScore;
+        this.userCheckinTodayScore = data.userCheckinTodayScore;
+        this.userBonusTodayScore = data.userBonusTodayScore;
+        this.userPostcardTodayScore = data.userPostcardTodayScore;
       });
 
       this.socket.on("checkin-update", (data) => {
-        console.log("Checkin update", data);
-        this.updateCheckins(data);
+        this.todaysCheckins = data.today;
+        this.yesterdaysCheckins = data.yesterday;
+      });
+
+      this.socket.on("postcard-drops-update", (data) => {
+        this.drops = data;
+      });
+
+      this.socket.on("bonus-update", (data) => {
+        this.communityBonus = data;
       });
     },
-
-    updateCheckins(data) {
-      this.todaysCheckins = data.today;
-      this.yesterdaysCheckins = data.yesterday;
-    },
-
-    updateUserLeaderboard(data) {
-      console.log("Updating user leaderboard", data);
-      this.userOverallScore = data.userOverallScore;
-      this.userOverallRank = data.userOverallRank;
-      this.userCheckinScore = data.userCheckinScore;
-      this.userCheckinRank = data.userCheckinRank;
-      this.userBonusScore = data.userBonusScore;
-      this.userBonusRank = data.userBonusRank;
-      this.userPostcardScore = data.userPostcardScore;
-      this.userPostcardRank = data.userPostcardRank;
-    },
-
-    updateLeaderboards(data) {
-      this.OVERALL_ALLTIME = data.overall.all_time;
-      this.OVERALL_WEEKLY = data.overall.weekly;
-      this.OVERALL_YESTERDAY = data.overall.yesterday;
-      this.OVERALL_TODAY = data.overall.today;
-      this.CHECKIN_ALLTIME = data.checkin.all_time;
-      this.CHECKIN_WEEKLY = data.checkin.weekly;
-      this.CHECKIN_YESTERDAY = data.checkin.yesterday;
-      this.CHECKIN_TODAY = data.checkin.today;
-      this.BONUS_ALLTIME = data.bonus.all_time;
-      this.BONUS_WEEKLY = data.bonus.weekly;
-      this.BONUS_YESTERDAY = data.bonus.yesterday;
-      this.BONUS_TODAY = data.bonus.today;
-      this.POSTCARD_ALLTIME = data.postcard.all_time;
-      this.POSTCARD_WEEKLY = data.postcard.weekly;
-      this.POSTCARD_YESTERDAY = data.postcard.yesterday;
-      this.POSTCARD_TODAY = data.postcard.today;
-    },
-
-    requestLeaderboardUpdate() {
-      if (this.isConnected) {
-        this.socket.emit("request_leaderboard_update");
-      }
-    },
-
   },
 });

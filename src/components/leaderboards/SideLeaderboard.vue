@@ -51,8 +51,8 @@
   <script setup>
   import { ref, computed, defineProps } from 'vue';
   import SectionHeader from "@/components/headers/SectionHeader.vue";
-  import { useLeaderboardStore } from '@/stores/realtime';
-  const leaderboardStore = useLeaderboardStore();
+  import { useRealtimeStore } from '@/stores/realtime';
+  const realtimeStore = useRealtimeStore();
 
   const props = defineProps({
     currentPage: {
@@ -108,7 +108,7 @@
     // Construct the key based on the current page and period
     console.log("currentPageKey", currentPageKey.value);
     const key = `${currentPageKey.value}${periodKey.value}`;
-    return leaderboardStore[key];
+    return realtimeStore[key];
   });
   </script>
   

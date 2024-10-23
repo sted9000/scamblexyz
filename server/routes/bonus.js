@@ -6,4 +6,5 @@ const bonusController = require("../controllers/bonusController");
 router.get("/user", authenticateToken, bonusController.getUserBonuses);
 router.post("/", authenticateToken, bonusController.createBonus);
 router.put("/:id", authenticateToken, bonusController.updateBonus);
+router.delete("/:id", authenticateToken, bonusController.deleteBonus);
 module.exports = router;

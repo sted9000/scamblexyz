@@ -47,11 +47,9 @@
 
 <script setup>
 import { computed, ref } from "vue";
-
 import BonusItem from "@/components/bonus/BonusItem.vue";
-
-import { useBonusStore } from "@/stores/bonus";
-const bonusStore = useBonusStore();
+import { useRealtimeStore } from "@/stores/realtime"; 
+const realtimeStore = useRealtimeStore();
 const selectedSite = ref('All Sites');
 const selectedType = ref('All Bonus Types');
 const selectedSort = ref('Recommended');
@@ -73,9 +71,9 @@ const filteredBonuses = computed(() => {
 
   // Filter by site
   if (selectedSite.value === 'All Sites') {
-    b = bonusStore.getCommunityBonus;
+    b = realtimeStore.getCommunityBonuses;
   } else {
-    b = bonusStore.getCommunityBonus.filter(bonus => bonus.site === selectedSite.value);
+    b = realtimeStore.getCommunityBonuses.filter(bonus => bonus.site === selectedSite.value);
   }
 
   // Filter by sort

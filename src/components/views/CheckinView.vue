@@ -41,17 +41,17 @@
             <div className="stat-title text-gray-700">Checkin Points</div>
             <div className="stat-value text-secondard flex items-center">
               <ArrowUpIcon class="h-8 w-8 mr-2 text-primary" />
-              <div class="stat-value text-primary">1350</div>
+              <div class="stat-value text-primary">{{ realtimeStore.getUserScore('Checkin') }}</div>
             </div>
-            <div className="stat-desc">24 Points Earned Today</div>
+            <div className="stat-desc">{{realtimeStore.getUserTodayScore('Checkin')}} Points Earned Today</div>
           </div>
           <div className="stat">
             <div className="stat-title text-gray-700">Community Rank</div>
             <div className="stat-value text-secondard flex items-center">
               <UserGroupIcon class="h-8 w-8 mr-2 text-primary" />
-              <div class="stat-value text-primary">2nd</div>
+              <div class="stat-value text-primary">{{ communityRankText }}</div>
             </div>
-            <div className="stat-desc">35 Points Behind 1st Place</div>
+            <div className="stat-desc">{{  pointsBehindText }}</div>
           </div>
         </div>
       </div>
@@ -62,7 +62,7 @@
             <div className="stat-title text-gray-700">Community Checkins</div>
             <div className="stat-value text-primary flex items-center">
               <UserGroupIcon class="h-8 w-8 mr-2" />
-              <div class="stat-value text-primary">{{ leaderboardStore.getTodaysCheckins }}</div>
+              <div class="stat-value text-primary">{{ realtimeStore.getTodaysCheckins }}</div>
             </div>
             <div class="stat-desc">Daily Total</div>
           </div>
@@ -74,10 +74,10 @@
 </template>
 
 <script setup>
-import { defineProps } from "vue";
+import { defineProps, computed } from "vue";
 import ViewHeader from "@/components/headers/ViewHeader.vue";
 import SectionHeader from "@/components/headers/SectionHeader.vue";
-import { useLeaderboardStore } from "@/stores/realtime";
+import { useRealtimeStore } from "@/stores/realtime";
 import { useCheckinStore } from "@/stores/checkin";
 import { useUserStore } from "@/stores/user";
 import {
@@ -88,9 +88,16 @@ import {
   ArrowUpIcon,
 } from "@heroicons/vue/24/outline";
 import CheckinSection from "@/components/checkin/CheckinSection.vue";
-
+import { communityRankFormatting, pointsBehindFormatting } from "@/utils";
 const checkinStore = useCheckinStore();
-const leaderboardStore = useLeaderboardStore();
+const realtimeStore = useRealtimeStore();
 const userStore = useUserStore();
 const props = defineProps(["title"])
+const communityRankText = computed(() => {
+  return communityRankFormatting(realtimeStore.getUserRank('Checkin'));
+});
+const pointsBehindText = computed(() => {
+  return pointsBehindFormatting('Checkin');
+});
+
 </script>

@@ -10,9 +10,9 @@ router.get(
 );
 
 router.post(
-  "/sites",
+  "/site/:siteId",
   authenticateToken,
-  userController.updateEnabledSites
+  userController.updateEnabledSite
 );
 
 router.put(

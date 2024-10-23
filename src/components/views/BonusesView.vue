@@ -30,17 +30,17 @@
             <div className="stat-title text-gray-700">Bonus Points</div>
             <div className="stat-value text-secondard flex items-center">
               <ArrowUpIcon class="h-8 w-8 mr-2 text-secondary" />
-              <div class="stat-value text-secondary">1350</div>
+              <div class="stat-value text-secondary">{{ realtimeStore.getUserScore('Bonus') }}</div>
             </div>
-            <div className="stat-desc">24 Points Earned Today</div>
+            <div className="stat-desc">{{ realtimeStore.getUserTodayScore('Bonus') }} Points Earned Today</div>
           </div>
           <div className="stat">
             <div className="stat-title text-gray-700">Community Rank</div>
             <div className="stat-value text-secondard flex items-center">
               <UserGroupIcon class="h-8 w-8 mr-2 text-secondary" />
-              <div class="stat-value text-secondary">2nd</div>
+              <div class="stat-value text-secondary">{{  communityRankText }}</div>
             </div>
-            <div className="stat-desc">35 Points Behind 1st Place</div>
+            <div className="stat-desc">{{ pointsBehindText }}</div>
           </div>
         </div>
       </div>
@@ -58,13 +58,17 @@
 </template>
 
 <script setup>
+import { defineProps, onMounted, computed } from "vue";
 import ViewHeader from "@/components/headers/ViewHeader.vue";
 import SectionHeader from "@/components/headers/SectionHeader.vue";
 import BonusSection from "@/components/bonus/BonusSection.vue";
 import BonusTable from "@/components/bonus/BonusTable.vue";
 import { useBonusStore } from "@/stores/bonus";
+import { useRealtimeStore } from "@/stores/realtime";
+import { pointsBehindFormatting, communityRankFormatting } from "@/utils";
+const realtimeStore = useRealtimeStore();
 const bonusStore = useBonusStore();
-import { defineProps, onMounted } from "vue";
+
 import {
   SunIcon,
   ArrowUpIcon,
@@ -73,6 +77,12 @@ import {
 } from "@heroicons/vue/24/outline";
 const props = defineProps({
   title: String,
+});
+const communityRankText = computed(() => {
+  return communityRankFormatting(realtimeStore.getUserRank('Bonus'));
+});
+const pointsBehindText = computed(() => {
+  return pointsBehindFormatting('Bonus');
 });
 
 onMounted(() => {

@@ -58,11 +58,11 @@
 
 <script setup>
 import { ref, onMounted, nextTick, computed } from "vue";
-import { useLeaderboardStore } from "../stores/realtime";
+import { useRealtimeStore } from "../stores/realtime";
 
-const leaderboardStore = useLeaderboardStore();
+const realtimeStore = useRealtimeStore();
 const bannerPlayers = computed(() => {
-  return leaderboardStore.bannerPlayers;
+  return realtimeStore.bannerPlayers;
 });
 const leaderboardString = (title, items) => {
   let result = [title];

@@ -1,3 +1,6 @@
+import { useRealtimeStore } from "@/stores/realtime";
+const realtimeStore = useRealtimeStore();
+
 export const setMedianLeadTimes = (drops) => {
   const leadTimesBySite = {};
 
@@ -33,4 +36,35 @@ export const batchStatus = (batch) => {
   } else {
     return "Pending";
   }
+};
+
+export const communityRankFormatting = (rank) => {
+  if (rank === 1) {
+    return "1st";
+  } else if (rank === 2) {
+    return "2nd";
+  } else if (rank === 3) {
+    return "3rd";
+  } else if (rank === 'Hmmm') {
+    return 'Hmmm';
+  } else {
+    return `${rank}th`;
+  }
+};
+
+export const pointsBehindFormatting = (category) => {
+  const userRank = realtimeStore.getUserRank(category);
+  if (userRank === 1) {
+    return "You're in 1st place!";
+  }
+
+  const score = realtimeStore.getUserScore(category);
+  if (!score) {
+    return "You're not on the leaderboard yet!";
+  } 
+  const playerAboveRank = userRank - 1;
+  const categoryUpper = category.toUpperCase();
+  const playerAboveScore = realtimeStore.getLeaderboardScoreByRank(playerAboveRank, categoryUpper);
+  const pointsBehind = playerAboveScore - score;
+  return `${pointsBehind} Points Behind ${playerAboveRank} Place`;
 };

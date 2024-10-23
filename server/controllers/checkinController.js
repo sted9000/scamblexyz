@@ -1,6 +1,6 @@
 const { Checkin, CheckinEvent } = require("../models");
-const { leaderboardQueue } = require("../services/leaderboardLogic");
-const { checkinQueue } = require("../services/checkinLogic");
+const { leaderboardQueue } = require("../queues/leaderboardQueue")
+const { checkinQueue } = require("../queues/checkinQueue")
 const { sequelize, User } = require("../models");
 const { checkinPoints } = require("../utils/pointsAlgorithms");
 
@@ -77,7 +77,7 @@ const checkinController = {
       // 6. Return the updated Checkin record
       res.json(checkin);
     } catch (error) {
-      await transaction.rollback();
+      // await transaction.rollback();
       console.error("Error updating checkin:", error);
       res.status(500).json({ message: "Internal server error" });
     }

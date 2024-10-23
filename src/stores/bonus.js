@@ -78,6 +78,14 @@ export const useBonusStore = defineStore("bonus", {
         console.error("Error updating bonus:", error);
       }
     },
+    async deleteBonus(id) {
+      try {
+        await api.delete(`/bonus/${id}`);
+        this.userBonus = this.userBonus.filter((b) => b.id !== id);
+      } catch (error) {
+        console.error("Error deleting bonus:", error);
+      }
+    },
 
     initializeSocket() {
       this.socket = io("http://localhost:3000", {

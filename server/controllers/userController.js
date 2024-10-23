@@ -14,20 +14,21 @@ const userController = {
       res.status(500).json({ message: "Internal server error" });
     }
   },
-  async updateEnabledSites(req, res) {
+  async updateEnabledSite(req, res) {
     try {
-      const { changedSites } = req.body;
-      console.log("Changed sites", changedSites);
-      for (const siteId in changedSites) {
-        const site = await UserSites.findOne({
-          where: {
+      const { siteId } = req.params;
+      const updatedProperty = req.body;
+      const key = Object.keys(updatedProperty)[0];
+      const value = updatedProperty[key];
+      console.log("Changed sites", updatedProperty);
+      const site = await UserSites.findOne({
+        where: {
             userId: req.user.userId,
             siteId,
           }
         });
-        site.isEnabled = changedSites[siteId];
-        await site.save();
-      }
+      site[key] = value;
+      await site.save();
       res.json({ message: "Sites updated successfully" });
     } catch (error) {
       console.error("Error updating sites:", error);

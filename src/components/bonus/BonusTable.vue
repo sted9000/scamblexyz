@@ -24,7 +24,9 @@ const formatBonusType = (type) => {
       return type;
   }
 };
-
+const deleteBonus = (id) => {
+  bonusStore.deleteBonus(id);
+};
 </script>
 
 <template>
@@ -61,7 +63,7 @@ const formatBonusType = (type) => {
           <td>{{ new Date(bonus.Bonus.createdAt).toLocaleDateString() }}</td>
           <!-- Delete button (trash icon)-->
           <td>
-            <TrashIcon class="h-4 w-4 text-gray-500" />
+            <TrashIcon @click="deleteBonus(bonus.id)" class="h-4 w-4 text-gray-500" />
           </td>
         </tr>
       </tbody>

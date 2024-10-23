@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SectionHeader title="Bonuses " :icon="UserGroupIcon" />
+    <SectionHeader title="Hottest Bonuses" :icon="UserGroupIcon" />
     <div
       class="carousel carousel-center w-full px-4 py-2 space-x-4 rounded-box -mt-2"
     >
@@ -19,7 +19,7 @@ import { computed } from "vue";
 import SectionHeader from "@/components/headers/SectionHeader.vue";
 import BonusItem from "@/components/bonus/BonusItem.vue";
 import { UserGroupIcon } from "@heroicons/vue/24/outline";
-import { useBonusStore } from "@/stores/bonus";
-const bonusStore = useBonusStore();
-const leads = computed(() => bonusStore.getCommunityBonus);
+import { useRealtimeStore } from "@/stores/realtime";
+const realtimeStore = useRealtimeStore();
+const leads = computed(() => realtimeStore.getCommunityBonuses);
 </script>

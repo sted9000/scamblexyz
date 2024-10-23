@@ -45,17 +45,17 @@
             <div className="stat-title text-gray-700">Postcard Points</div>
             <div className="stat-value text-secondard flex items-center">
               <ArrowUpIcon class="h-8 w-8 mr-2 text-accent" />
-              <div class="stat-value text-accent">1350</div>
+              <div class="stat-value text-accent">{{ realtimeStore.getUserScore('Postcard') }}</div>
             </div>
-            <div className="stat-desc">24 Points Earned Today</div>
+            <div className="stat-desc"> {{ realtimeStore.getUserTodayScore('Postcard') }}</div>
           </div>
           <div className="stat">
             <div className="stat-title text-gray-700">Community Rank</div>
             <div className="stat-value text-secondard flex items-center">
               <UserGroupIcon class="h-8 w-8 mr-2 text-accent" />
-              <div class="stat-value text-accent">2nd</div>
+              <div class="stat-value text-accent">{{ communityRankText }}</div>
             </div>
-            <div className="stat-desc">35 Points Behind 1st Place</div>
+            <div className="stat-desc">{{ pointsBehindText }}</div>
           </div>
         </div>
       </div>
@@ -95,7 +95,9 @@ import SectionHeader from "@/components/headers/SectionHeader.vue";
 import LeadTimeItem from "@/components/postcard/LeadTimeItem.vue";
 import PostcardTable from "@/components/postcard/PostcardTable.vue";
 import { usePostcardStore } from "@/stores/postcard";
-import { defineProps, onMounted, ref } from "vue";
+import { useRealtimeStore } from "@/stores/realtime";
+import { defineProps, onMounted, ref, computed } from "vue";
+import { pointsBehindFormatting, communityRankFormatting } from "@/utils";
 import {
   EnvelopeIcon,
   EnvelopeOpenIcon,
@@ -108,12 +110,19 @@ const props = defineProps({
   title: String,
 });
 const postcardStore = usePostcardStore();
-
+const realtimeStore = useRealtimeStore();
 const leadTimes = ref([
   { id: 1, leadTime: "7 days" },
   { id: 2, leadTime: "5 days" },
   { id: 3, leadTime: "6 days" },
 ]);
+
+const communityRankText = computed(() => {
+  return communityRankFormatting(realtimeStore.getUserRank('Postcard'));
+});
+const pointsBehindText = computed(() => {
+  return pointsBehindFormatting('Postcard');
+});
 
 onMounted(() => {
   postcardStore.fetchBatches();
