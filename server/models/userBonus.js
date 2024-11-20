@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
-  const Bonus = sequelize.define("Bonus", {
+  const UserBonus = sequelize.define("UserBonus", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -21,29 +21,20 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     bonusType: {
-      type: DataTypes.STRING,
+      type: DataTypes.ENUM('deposit', 'deposit_daily', 'signup', 'happyhour', 'other'),
       allowNull: false,
-      enum: ["deposit", "signup", "happyhour", "other"],
-    },
-    allowShare: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-    datetime: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
     },
     claimLimit: {
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: "1",
     },
-    confirmedCount: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
+    datetime: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: "Users",
@@ -58,16 +49,24 @@ module.exports = (sequelize, DataTypes) => {
         key: "id",
       },
     },
-  });
+    communityBonusId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+      references: {
+        model: "CommunityBonuses",
+        key: "id",
+      },
+    },
+  },
+  {
+    tableName: "UserBonuses",
+  }
+  );
 
-  Bonus.associate = (models) => {
-    Bonus.belongsTo(models.User, { foreignKey: "userId" });
-    Bonus.belongsTo(models.Site, { foreignKey: "siteId" });
-    Bonus.belongsToMany(models.User, {
-      through: models.BonusClaim,
-      foreignKey: "bonusId",
-    });
+  UserBonus.associate = (models) => {
+    UserBonus.belongsTo(models.User, { foreignKey: "userId" });
+    UserBonus.belongsTo(models.Site, { foreignKey: "siteId" });
+    UserBonus.belongsTo(models.CommunityBonus, { foreignKey: "communityBonusId" });
   };
-
-  return Bonus;
+  return UserBonus;
 };

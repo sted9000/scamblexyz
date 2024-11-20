@@ -3,9 +3,9 @@ const checkinPoints = (streak) => {
     return 1;
   } else if (1 < streak < 10) {
     return 2;
-  } else if (10 < streak < 25) {
+  } else if (10 <=streak < 25) {
     return 3;
-  } else if (25 < streak < 100) {
+  } else if (25 <= streak < 100) {
     return 4;
   } else {
     return 5;

@@ -1,7 +1,7 @@
 const { Checkin, CheckinEvent } = require("../models");
 const { leaderboardQueue } = require("../queues/leaderboardQueue")
 const { checkinQueue } = require("../queues/checkinQueue")
-const { sequelize, User } = require("../models");
+const { sequelize, User, Site} = require("../models");
 const { checkinPoints } = require("../utils/pointsAlgorithms");
 
 const checkinController = {
@@ -12,14 +12,21 @@ const checkinController = {
         where: {
           userId: req.user.userId,
         },
+        include: [
+          {
+            model: Site,
+            attributes: ["imagePath", "fullName", "checkinValue", "checkinType", "checkingResetTime", "url"],
+          },
+        ],
       });
-
       res.json(checkin);
     } catch (error) {
       console.error("Error fetching sites:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   },
+
+
   /*** Update a checkin object for a user ***/
   async updateCheckin(req, res) {
     const transaction = await sequelize.transaction();
@@ -36,6 +43,10 @@ const checkinController = {
           {
             model: User,
             attributes: ["username", "userIcon", "createdAt"],
+          },
+          {
+            model: Site,
+            attributes: ["checkinValue", "checkinType", "checkingResetTime"],
           },
         ],
       });
@@ -55,7 +66,7 @@ const checkinController = {
           SiteId,
           CheckinId: checkin.id,
           checkinTime: new Date(),
-          checkinType: checkin.checkinType,
+          checkinType: checkin.Site.checkinType,
           streakCount: checkin.currentStreak,
         },
         { transaction }

@@ -1,114 +1,123 @@
+// Leaderboard.vue
 <template>
-    <div class="flex flex-col h-screen border-l-2 border-gray-200">
-      <SectionHeader
-        :title="title"
-        class="mt-6"
-      />
+  <div class="flex flex-col h-screen border-l-2 border-gray-200">
+    <SectionHeader
+      :title="title"
+      class="mt-6"
+    />
 
-      <!-- Select Tabs -->
-      <div class="tabs tabs-boxed mx-6 mb-6">
-        <a 
-          class="tab" 
-          :class="{ 'tab-active': selectedPeriod === 'Today' }"
-          @click="selectPeriod('Today')"
-        >
-          Today
-        </a>
-        <a 
-          class="tab" 
-          :class="{ 'tab-active': selectedPeriod === 'Weekly' }"
-          @click="selectPeriod('Weekly')"
-        >
-          Weekly
-        </a>
-        <a 
-          class="tab" 
-          :class="{ 'tab-active': selectedPeriod === 'All Time' }"
-          @click="selectPeriod('All Time')"
-        >
-          All Time
-        </a>
-      </div>
+    <LeaderboardTabs
+      v-model="selectedPeriod"
+    />
 
-      <!-- Players -->
-      <div class="flex flex-col gap-4 px-12">
-        <div v-for="player in players" :key="player.id">
-          <div class="flex justify-between">
-            
-            <div class="flex items-center gap-2">
-                <div class="font-bold text-sm text-gray-500 w-6">{{ player.rank }}</div>
-                <img :src="`/images/profile/${player.userIcon}.png`" class="w-6 h-6 rounded-full" />
-                <div class="font-bold text-md text-gray-700">{{ player.username }}</div>
-            </div>
-            
-            <div class="font-bold text-md text-gray-700">{{ player.score }}</div>
-          </div>
-        </div>
-      </div>
+    <div class="flex flex-col gap-4 px-6 pb-16">
+      <TransitionGroup
+        name="list"
+        tag="div"
+      >
+        <LeaderboardPlayer
+          v-for="player in players"
+          :key="player.userId"
+          :player="player"
+          :is-highlighted="highlightedPlayerId === player.userId"
+          :has-moved="movedPlayerId === player.userId"
+        />
+      </TransitionGroup>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, computed, defineProps } from 'vue';
-  import SectionHeader from "@/components/headers/SectionHeader.vue";
-  import { useRealtimeStore } from '@/stores/realtime';
-  const realtimeStore = useRealtimeStore();
+  </div>
+</template>
 
-  const props = defineProps({
-    currentPage: {
-      type: String,
-      required: true
-    }
-  });
+<script setup>
+import { ref, computed, watch, defineProps } from 'vue';
+import SectionHeader from "@/components/headers/SectionHeader.vue";
+import LeaderboardTabs from './LeaderboardTabs.vue';
+import LeaderboardPlayer from './LeaderboardPlayer.vue';
+import { useRealtimeStore } from '@/stores/realtime';
 
-  const title = computed(() => {
-    if (props.currentPage === 'Home') {
-      return 'Overall Leaderboard';
-    } else if (props.currentPage === 'Bonuses') {
-      return 'Bonus Leaderboard';
-    } else if (props.currentPage === 'Checkins') {
-      return 'Check-in Leaderboard';
-    } else if (props.currentPage === 'Postcards') {
-      return 'Postcard Leaderboard';
-    }
-    return 'Leaderboard';
-  });
+const realtimeStore = useRealtimeStore();
 
-  const selectedPeriod = ref('Today');
+const PAGE_MAPPINGS = {
+  Home: { title: 'Overall Leaderboard', key: 'overall' },
+  Bonuses: { title: 'Bonus Leaderboard', key: 'bonus' },
+  Checkins: { title: 'Check-in Leaderboard', key: 'checkin' },
+  Postcards: { title: 'Postcard Leaderboard', key: 'postcard' }
+};
 
-  const selectPeriod = (period) => {
-    selectedPeriod.value = period;
-  };
+const PERIOD_MAPPINGS = {
+  'Today': 'Today',
+  'Weekly': 'Weekly',
+  'All Time': 'AllTime'
+};
 
-  const currentPageKey = computed(() => {
-    if (props.currentPage === 'Home') {
-      return 'overall';
-    } else if (props.currentPage === 'Bonuses') {
-      return 'bonus';
-    } else if (props.currentPage === 'Checkins') {
-      return 'checkin';
-    } else if (props.currentPage === 'Postcards') {
-      return 'postcard';
-    }
-    return 'overall';
-  });
-
-  const periodKey = computed(() => {
-    if (selectedPeriod.value === 'Today') {
-      return 'Today';
-  } else if (selectedPeriod.value === 'Weekly') {
-    return 'Weekly';
-  } else if (selectedPeriod.value === 'All Time') {
-    return 'AllTime';
+const props = defineProps({
+  currentPage: {
+    type: String,
+    required: true
   }
-    return 'AllTime';
-  });
+});
 
-  const players = computed(() => {
-    // Construct the key based on the current page and period
-    console.log("currentPageKey", currentPageKey.value);
-    const key = `${currentPageKey.value}${periodKey.value}`;
-    return realtimeStore[key];
-  });
-  </script>
+const selectedPeriod = ref('Today');
+const highlightedPlayerId = ref(null);
+const movedPlayerId = ref(null);
+
+const title = computed(() => 
+  PAGE_MAPPINGS[props.currentPage]?.title ?? 'Leaderboard'
+);
+
+const currentPageKey = computed(() => 
+  PAGE_MAPPINGS[props.currentPage]?.key ?? 'overall'
+);
+
+const periodKey = computed(() => 
+  PERIOD_MAPPINGS[selectedPeriod.value] ?? 'AllTime'
+);
+
+const players = computed(() => {
+  const key = `${currentPageKey.value}${periodKey.value}`;
+  return realtimeStore[key];
+});
+
+// Watch for changes in player scores or positions
+watch(players, (newPlayers, oldPlayers) => {
+  if (!oldPlayers) return;
   
+  newPlayers.forEach((player, index) => {
+    const oldPlayer = oldPlayers.find(p => p.userId === player.userId);
+    if (!oldPlayer) return;
+
+    // Highlight score changes
+    if (player.score !== oldPlayer.score) {
+      highlightedPlayerId.value = player.userId;
+      setTimeout(() => {
+        highlightedPlayerId.value = null;
+      }, 1000);
+    }
+
+    // Highlight position changes
+    const oldIndex = oldPlayers.findIndex(p => p.userId === player.userId);
+    if (oldIndex !== index) {
+      movedPlayerId.value = player.userId;
+      setTimeout(() => {
+        movedPlayerId.value = null;
+      }, 1000);
+    }
+  });
+}, { deep: true });
+</script>
+
+<style>
+.list-move {
+  transition: transform 0.5s ease;
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
+</style>

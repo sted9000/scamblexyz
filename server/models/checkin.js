@@ -21,27 +21,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 1,
     },
-    enabled: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true,
-    },
-    checkinType: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: "daily",
-      enum: ["daily", "hourly"],
-    },
-    checkinTime: {
-      type: DataTypes.TIME,
-      allowNull: true,
-      defaultValue: "00:00:00",
-    },
-    hourlyCheckinReset: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      defaultValue: 24,
-    },
   });
 
   Checkin.associate = (models) => {

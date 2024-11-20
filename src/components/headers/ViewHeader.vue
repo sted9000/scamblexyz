@@ -1,40 +1,31 @@
 <template>
-  <div class="flex justify-between items-center mx-4 mt-4 -mb-2">
+  <div class="flex justify-between mx-4 mt-4 -mb-2 h-12">
     <h1 class="text-3xl font-bold p-2">{{ props.title }}</h1>
     <button
-      v-if="props.showButton"
-      @click="$emit('buttonClick')"
-      :class="['rounded-full p-2', buttonColorClass, hoverColorClass]"
+      v-if="props.showHint"
+      @click="showHint()"
+      class="btn btn-ghost btn-circle mt-1"
     >
-      <component :is="props.icon" class="w-6 h-6" />
+      <InformationCircleIcon class="w-8 h-8" />
     </button>
   </div>
   <div class="divider" />
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from "vue";
+import { defineProps } from "vue";
+import { InformationCircleIcon } from "@heroicons/vue/24/outline";
+import { useModalStore } from "@/stores/modal";
+
+const modalStore = useModalStore();
 
 const props = defineProps({
   title: String,
-  showButton: Boolean,
-  icon: Object,
-  color: String,
+  showHint: Boolean,
 });
 
-defineEmits(["buttonClick"]);
+const showHint = () => {
+  modalStore.setOpenModal(`${props.title.toLowerCase()}Hint`);
+};
 
-const buttonColorClass = computed(() => {
-  const colorMap = {
-    indigo: "bg-indigo-50",
-  };
-  return colorMap[props.color] || "bg-gray-50";
-});
-
-const hoverColorClass = computed(() => {
-  const colorMap = {
-    indigo: "hover:bg-indigo-100",
-  };
-  return colorMap[props.color] || "hover:bg-gray-100";
-});
 </script>

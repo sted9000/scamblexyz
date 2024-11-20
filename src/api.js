@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
+import router from "@/router";
 
 const api = axios.create({
   baseURL: "http://localhost:3000",
@@ -18,11 +19,12 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.log("error", error);
     if (error.response && error.response.status === 401) {
       // Token has expired or is invalid
       const authStore = useAuthStore();
       authStore.clearToken();
-      // Redirect to login page or show auth modal
+      router.push("/");
     }
     return Promise.reject(error);
   }

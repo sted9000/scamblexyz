@@ -18,10 +18,16 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useUserStore } from "@/stores/user";
 const userStore = useUserStore();
 const isLoading = computed(
   () => userStore.getIsLoading || userStore.getIsLoggingOut
 );
+import { useAuthStore } from "@/stores/auth";
+const authStore = useAuthStore();
+
+onMounted(() => {
+  authStore.initializeGoogleSignIn();
+});
 </script>

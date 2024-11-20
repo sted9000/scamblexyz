@@ -41,7 +41,7 @@
         class="text-xs font-bold mr-1"
       >
         {{
-          props.item.confirmedCount
+          props.item.claimedCount
         }}
       </div>
         <CheckCircleIcon class="h-4 w-4" />
@@ -62,7 +62,7 @@
         Launch
       </button>
       <button
-        @click="confirmBonus"
+        @click="recordBonus"
         class="px-3 py-1 bg-green-500 text-white rounded my-1 hover:bg-green-600 transition-colors"
       >
         Record
@@ -78,7 +78,6 @@ import { useBonusStore } from "@/stores/bonus";
 
 
 const bonusStore = useBonusStore();
-// const modalStore = useModalStore();
 
 const props = defineProps({
   item: {
@@ -134,9 +133,9 @@ const launchBonus = () => {
   window.open(props.item.url, "_blank");
 };
 
-const confirmBonus = () => {
+const recordBonus = () => {
   console.log("Confirming bonus", props.item.id);
-  bonusStore.updateBonus(props.item.id, {isConfirmed: true});
+  bonusStore.addBonus(props.item);
 };
 
 

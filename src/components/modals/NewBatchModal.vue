@@ -123,6 +123,7 @@ const submitPost = () => {
   }
   // turn datetime into date
   const submissionDate = new Date(dateSent.value);
+  console.log(submissionDate);
   const newPost = {
     totalCards: cardCount.value,
     submissionDate,

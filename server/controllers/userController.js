@@ -1,4 +1,4 @@
-const { UserSites, User } = require("../models");
+const { UserSites, User, Site } = require("../models");
 
 const userController = {
   async getSites(req, res) {
@@ -6,7 +6,13 @@ const userController = {
       const sites = await UserSites.findAll({
         where: {
           UserId: req.user.userId,
-        }
+        },
+        include: [
+          {
+            model: Site,
+            attributes: ["imagePath", "fullName", "isPostcard", "postcardValue", "postcardLeadTime", "postcardConsistancy", "postcardPopularity"],
+          },
+        ],
       });
       res.json(sites);
     } catch (error) {

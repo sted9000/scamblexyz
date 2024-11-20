@@ -1,4 +1,6 @@
 const { UserScore, User } = require('../models');
+const schedule = require('node-schedule');
+const { redisClient } = require('../config/redis');
 
 /*** Leadeboard Constants ***/
 const LEADERBOARD_CATEGORIES = ['overall', 'checkin', 'bonus', 'postcard'];
@@ -72,7 +74,20 @@ const getUserScoreAndRank = async (redisClient, key) => {
     const userCheckinTodayScore = await redisClient.zscore(LEADERBOARD_KEYS.checkin.today, key);
     const userBonusTodayScore = await redisClient.zscore(LEADERBOARD_KEYS.bonus.today, key);
     const userPostcardTodayScore = await redisClient.zscore(LEADERBOARD_KEYS.postcard.today, key);
-    return { userOverallScore, userOverallRank, userCheckinScore, userCheckinRank, userBonusScore, userBonusRank, userPostcardScore, userPostcardRank, userOverallTodayScore, userCheckinTodayScore, userBonusTodayScore, userPostcardTodayScore };
+    return { 
+      userOverallScore, 
+      userOverallRank: userOverallRank + 1, 
+      userCheckinScore, 
+      userCheckinRank: userCheckinRank + 1, 
+      userBonusScore, 
+      userBonusRank: userBonusRank + 1, 
+      userPostcardScore, 
+      userPostcardRank: userPostcardRank + 1, 
+      userOverallTodayScore, 
+      userCheckinTodayScore, 
+      userBonusTodayScore, 
+      userPostcardTodayScore 
+    };
 }
 
 const formUserKey = async (userId) => {
@@ -132,31 +147,36 @@ const initializeLeaderboards = async (redisClient) => {
     console.log("Leaderboards initialization complete.");
 }
 
-// Function to reset daily and weekly leaderboards
-// const resetLeaderboards = async () => {
-//     const now = moment();
-  
-//     // Reset daily leaderboards
-//     if (now.hour() === 0 && now.minute() === 0) {
-//       for (const category of LEADERBOARD_CATEGORIES) {
-//         await redisClient.rename(
-//           LEADERBOARD_KEYS[category].today,
-//           LEADERBOARD_KEYS[category].yesterday
-//         );
-//         await redisClient.del(LEADERBOARD_KEYS[category].today);
-//       }
-//     }
-  
-//     // Reset weekly leaderboard on Monday
-//     if (now.day() === 1 && now.hour() === 0 && now.minute() === 0) {
-//       for (const category of LEADERBOARD_CATEGORIES) {
-//         await redisClient.del(LEADERBOARD_KEYS[category].weekly);
-//       }
-//     }
-//   }
-  
-//   // Set up a cron job to run resetLeaderboards every minute
-// const CronJob = require("cron").CronJob;
-// const cronJob = new CronJob("* * * * *", resetLeaderboards, null, true, "UTC");
+const dailyRedisLeaderboardsUpdate = async () => {
+  /*** Daily moving of 'todays' leaderboards to 'yesterdays' leaderboards ***/
+  schedule.scheduleJob('0 0 * * *', async () => {
+    console.log('Starting daily database update job...');
+    try {
+      for (const category of LEADERBOARD_CATEGORIES) {
+        // Move the 'today' leaderboard to the 'yesterday' leaderboard
+      await redisClient.rename(LEADERBOARD_KEYS[category].today, LEADERBOARD_KEYS[category].yesterday);
+      // Delete the 'today' leaderboard
+        await redisClient.del(LEADERBOARD_KEYS[category].today);
+      }
+    } catch (error) {
+      console.error('Error updating daily Redis leaderboards:', error);
+    }
+  });
+}
 
-module.exports = {getLeaderboardFromRedis, formatLeaderboard, initializeLeaderboards, updateCategoryLeaderboard, getUserScoreAndRank, formUserKey};
+const weeklyRedisLeaderboardsUpdate = async () => {
+  /*** Each monday morning at 00:00:00 UTC, reset the weekly leaderboards ***/
+  schedule.scheduleJob('0 0 * * 1', async () => {
+    console.log('Starting weekly database update job...');
+    try {
+      for (const category of LEADERBOARD_CATEGORIES) {
+        // remove all items from the weekly leaderboard
+        await redisClient.del(LEADERBOARD_KEYS[category].weekly);
+      }
+    } catch (error) {
+      console.error('Error updating weekly Redis leaderboards:', error);
+    }
+  });
+}
+
+module.exports = {getLeaderboardFromRedis, formatLeaderboard, initializeLeaderboards, updateCategoryLeaderboard, getUserScoreAndRank, formUserKey, dailyRedisLeaderboardsUpdate, weeklyRedisLeaderboardsUpdate};

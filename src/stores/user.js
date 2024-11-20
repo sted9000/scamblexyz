@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
-import { sites as localSites } from "@/constants";
 import api from "@/api";
+import { flattenSites } from "@/utils";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -9,14 +9,22 @@ export const useUserStore = defineStore("user", {
   }),
 
   getters: {
-    getSites: (state) => state.sites,
-    getEnabledSites: (state) => state.sites.filter((site) => site.isEnabled),
-    getPostcardSites: (state) => state.sites.filter((site) => site.isEnabled && site.isCard),
+    getSites: (state) => {
+      // Sort the sites alphabetically by name
+      return state.sites.sort((a, b) => a.fullName.localeCompare(b.fullName));
+    },
+    getEnabledSites: (state) => {
+      // enabled and sort alphabetically
+      return state.sites.filter((site) => site.isEnabled).sort((a, b) => a.fullName.localeCompare(b.fullName));
+    },
+    getSiteById: (state) => (siteId) => state.sites.find((site) => site.siteId === siteId),
+    getPostcardSites: (state) => state.sites.filter((site) => site.isEnabled && site.postcardEnabled && site.isPostcard),
   },
   actions: {
     async fetchUserSites() {
       const response = await api.get("/user/sites");
-      this.sites = response.data.map((site) => ({ ...site, ...localSites[site.id]}));
+      // map imagePath to the full path
+      this.sites = flattenSites(response.data);
     },
     async updateEnabledSite(siteId, updatedProperty) {
       console.log("Updating site", siteId, updatedProperty);

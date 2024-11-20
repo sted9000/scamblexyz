@@ -1,8 +1,8 @@
 // socket.js
 const { getLeaderboardFromRedis, getUserScoreAndRank, formUserKey } = require('../services/leaderboardService');
-const { fetchBonusesFromRedis } = require('../services/bonusService');
 const { redisClient } = require('./redis');
 const moment = require('moment');
+const { CommunityBonus, Site } = require('../models');
 let ioInstance = null;
 
 function initializeSocket(server) {
@@ -23,8 +23,21 @@ function initializeSocket(server) {
     socket.emit('leaderboards-update', leaderboards);
 
     /*** Send the bonuses to the client ***/
-    const bonuses = await fetchBonusesFromRedis(redisClient);
+    const bonuses = await CommunityBonus.findAll({
+      include: [{
+        model: Site,
+        attributes: ["imagePath", "fullName", "isPostcard"],
+      }]
+    });
     socket.emit('bonus-update', bonuses);
+
+    /*** Send the bonus claim update to the client ***/
+    const todaysBonuses = await redisClient.get(`bonuses:${moment().format("YYYY-MM-DD")}`);
+    const yesterdaysBonuses = await redisClient.get(`bonuses:${moment().subtract(1, "day").format("YYYY-MM-DD")}`);
+    socket.emit('bonus-claim-update', { 
+      today: todaysBonuses, 
+      yesterday: yesterdaysBonuses
+    });
 
     /*** Send the checkin update to the client ***/
     const todaysCheckins = await redisClient.get(`checkins:${moment().format("YYYY-MM-DD")}`);

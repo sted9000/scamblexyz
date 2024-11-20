@@ -8,6 +8,11 @@ const routes = [
     component: () => import("@/components/landingPage/LandingPageComponent.vue"),
   },
   {
+    path: "/auth/google",
+    name: "GoogleAuth",
+    component: () => import("@/components/views/GoogleAuthHandler.vue"),
+  },
+  {
     path: "/app",
     name: "App",
     component: () => import("@/components/ApplicationComponent.vue"),

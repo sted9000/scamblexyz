@@ -6,7 +6,7 @@
         :key="item.name"
         :class="[
           'flex items-center cursor-pointer p-4 rounded-full w-full max-w-[170px]',
-          item.selected ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50',
+          selectedItem === item.name ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50',
         ]"
         @click="selectItem(item)"
       >
@@ -46,7 +46,8 @@
 </template>
 
 <script setup>
-import { ref, defineEmits } from "vue";
+import { ref, computed } from "vue";
+import { useUiStore } from "@/stores/ui";
 import {
   HomeIcon,
   CheckBadgeIcon,
@@ -59,23 +60,22 @@ import {
   
 } from "@heroicons/vue/24/outline";
 
+const uiStore = useUiStore();
 const navItems = ref([
-  { name: "Home", icon: HomeIcon, selected: true },
-  { name: "Checkins", icon: CheckBadgeIcon, selected: false },
-  { name: "Bonuses", icon: GiftIcon, selected: false },
-  { name: "Postcards", icon: EnvelopeIcon, selected: false },
-  { name: "Games", icon: PuzzlePieceIcon, selected: false },
-  { name: "Leaderboards", icon: ChartBarIcon, selected: false },
-  { name: "Config", icon: AdjustmentsHorizontalIcon, selected: false },
-  { name: "About", icon: QuestionMarkCircleIcon, selected: false },
+  { name: "Home", icon: HomeIcon},
+  { name: "Checkins", icon: CheckBadgeIcon},
+  { name: "Bonuses", icon: GiftIcon},
+  { name: "Postcards", icon: EnvelopeIcon},
+  { name: "Games", icon: PuzzlePieceIcon},
+  { name: "Leaderboards", icon: ChartBarIcon},
+  { name: "Config", icon: AdjustmentsHorizontalIcon},
+  { name: "About", icon: QuestionMarkCircleIcon},
 ]);
 
-const emit = defineEmits(["itemSelected"]);
+const selectedItem = computed(() => {
+  return uiStore.getView;
+});
 const selectItem = (item) => {
-  navItems.value.forEach(
-    (navItem) => (navItem.selected = navItem.name === item.name)
-  );
-  console.log(item);
-  emit("itemSelected", item.name);
+  uiStore.setView(item.name);
 };
 </script>

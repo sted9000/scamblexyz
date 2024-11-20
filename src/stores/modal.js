@@ -14,6 +14,10 @@ export const useModalStore = defineStore("modal", {
     editProfileModal: false,
     newBonusModal: false,
     rejectionModal: false,
+    postcardSiteModal: false,
+    checkinsHintModal: false,
+    bonusesHintModal: false,
+    postcardsHintModal: false,
   }),
   getters: {
     getConfigModal: (state) => {
@@ -49,11 +53,20 @@ export const useModalStore = defineStore("modal", {
     getEditProfileModal: (state) => {
       return state.editProfileModal;
     },
-    getModalData: (state) => {
-      return state.modalData;
-    },
     getNewBonusModal: (state) => {
       return state.newBonusModal;
+    },
+    getPostcardSiteModal: (state) => {
+      return state.postcardSiteModal;
+    },
+    getCheckinsHintModal: (state) => {
+      return state.checkinsHintModal;
+    },
+    getBonusesHintModal: (state) => {
+      return state.bonusesHintModal;
+    },
+    getPostcardsHintModal: (state) => {
+      return state.postcardsHintModal;
     },
     getModalOpen: (state) => {
       return (
@@ -68,7 +81,11 @@ export const useModalStore = defineStore("modal", {
         state.createPostModal ||
         state.editProfileModal ||
         state.newBonusModal ||
-        state.rejectionModal
+        state.rejectionModal ||
+        state.postcardSiteModal ||
+        state.checkinsHintModal ||
+        state.bonusesHintModal ||
+        state.postcardsHintModal
       );
     },
   },
@@ -86,7 +103,10 @@ export const useModalStore = defineStore("modal", {
       this.editProfileModal = false;
       this.newBonusModal = false;
       this.rejectionModal = false;
-      this.modalData = {};
+      this.postcardSiteModal = false;
+      this.checkinsHintModal = false;
+      this.bonusesHintModal = false;
+      this.postcardsHintModal = false;
     },
     setOpenModal(modalName) {
       this.setCloseAllModals();
@@ -126,6 +146,18 @@ export const useModalStore = defineStore("modal", {
           break;
         case "addRejection":
           this.rejectionModal = true;
+          break;
+        case "postcardSite":
+          this.postcardSiteModal = true;
+          break;
+        case "checkinsHint":
+          this.checkinsHintModal = true;
+          break;
+        case "bonusesHint":
+          this.bonusesHintModal = true;
+          break;
+        case "postcardsHint":
+          this.postcardsHintModal = true;
           break;
         default:
           console.error("Invalid modal name:", modalName);

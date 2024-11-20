@@ -1,7 +1,8 @@
 // src/stores/leaderboardStore.js
+import { flattenSite } from "@/utils";
 import { defineStore } from "pinia";
 import { io } from "socket.io-client";
-import { sites as localSites } from "@/constants";
+
 export const useRealtimeStore = defineStore("realtime", {
   state: () => ({
     /*** Leaderboards ***/
@@ -42,6 +43,9 @@ export const useRealtimeStore = defineStore("realtime", {
     /*** Community ***/  
     todaysCheckins: 0,
     yesterdaysCheckins: 0,
+    todaysBonuses: 0,
+    yesterdaysBonuses: 0,
+  
     drops: [],
     communityBonus: [],
     numberOfBonuses: 0,
@@ -68,6 +72,35 @@ export const useRealtimeStore = defineStore("realtime", {
     postcardYesterday: (state) => state.POSTCARD_YESTERDAY,
     postcardToday: (state) => state.POSTCARD_TODAY,
 
+    // getPointsBehindObject
+    getPointsBehindObject: (state) => (category) => {
+      if (state[`user${category}Rank`] === null) {
+        return {
+          rank: 0,
+          points: 0,
+          today: 0,
+          behind: 0,
+        }
+      }
+      const pointsOfUserAhead = state.getLeaderboardScoreByRank(state[`user${category}Rank`], category.toUpperCase());
+
+      return {
+        rank: state[`user${category}Rank`],
+        points: state[`user${category}Score`],
+        today: state[`user${category}TodayScore`],
+        behind: pointsOfUserAhead - state[`user${category}Score`],
+      }
+    },
+    // get yesterdays leaderboard winners for each leaderboard
+    getYesterdaysLeaderboardWinners: (state) => {
+      return {
+        Overall: state.OVERALL_YESTERDAY[0] || null,
+        Checkin: state.CHECKIN_YESTERDAY[0] || null,
+        Bonus: state.BONUS_YESTERDAY[0] || null,
+        Postcard: state.POSTCARD_YESTERDAY[0] || null,
+      }
+    },
+
     // get yesterdays leaderboard winner
     getYesterdaysLeaderboardWinner: (state) => {
       return state.OVERALL_YESTERDAY.find((user) => user.rank === 1)
@@ -75,7 +108,12 @@ export const useRealtimeStore = defineStore("realtime", {
 
     // get number of bonuses
     getNumberOfBonuses: (state) => {
-      return state.numberOfBonuses;
+      return state.communityBonus.length;
+    },
+
+    // get number of bonuses today
+    getNumberOfBonusesToday: (state) => {
+      return state.communityBonus.filter((bonus) => bonus.createdAt.includes(new Date().toISOString().split("T")[0])).length;
     },
 
     // get user rank
@@ -92,7 +130,12 @@ export const useRealtimeStore = defineStore("realtime", {
     },
 
     getLeaderboardScoreByRank: (state) => (rank, category) => {
-      return state[`${category}_ALLTIME`][rank].score;
+      console.log("getLeaderboardScoreByRank", rank, category);
+      const leaderboardUser = state[`${category}_ALLTIME`][rank - 2];
+      if (!leaderboardUser) {
+        return 0;
+      }
+      return leaderboardUser.score;
     },
 
     // get user today score
@@ -105,6 +148,16 @@ export const useRealtimeStore = defineStore("realtime", {
       return state.todaysCheckins;
     },
 
+    // get todays bonuses
+    getTodaysBonuses: (state) => {
+      return state.todaysBonuses;
+    },
+
+    // get yesterdays bonuses
+    getYesterdaysBonuses: (state) => {
+      return state.yesterdaysBonuses;
+    },
+
     // get yesterdays checkins
     getYesterdaysCheckins: (state) => {
       return state.yesterdaysCheckins;
@@ -113,10 +166,7 @@ export const useRealtimeStore = defineStore("realtime", {
     // get drops
     getDrops: (state) => {
       return state.drops.map((drop) => {
-        return {
-          ...drop,
-          ...localSites[drop.siteId],
-        };
+        return flattenSite(drop);
       });
     },
 
@@ -129,11 +179,7 @@ export const useRealtimeStore = defineStore("realtime", {
     getCommunityBonuses: (state) => {
       // Community bonuses that were added today
       return state.communityBonus
-        .map((bonus) => ({
-          ...bonus,
-          ...localSites[bonus.siteId],
-          id: bonus.id,
-        }));
+        .map((bonus) => flattenSite(bonus));
     },
 
   },
@@ -191,6 +237,8 @@ export const useRealtimeStore = defineStore("realtime", {
         this.userCheckinTodayScore = data.userCheckinTodayScore;
         this.userBonusTodayScore = data.userBonusTodayScore;
         this.userPostcardTodayScore = data.userPostcardTodayScore;
+
+        console.log("user-leaderboard-update", data);
       });
 
       this.socket.on("checkin-update", (data) => {
@@ -204,6 +252,11 @@ export const useRealtimeStore = defineStore("realtime", {
 
       this.socket.on("bonus-update", (data) => {
         this.communityBonus = data;
+      });
+      this.socket.on("bonus-claim-update", (data) => {
+        console.log("bonus-claim-update", data);
+        this.todaysBonuses = data.today;
+        this.yesterdaysBonuses = data.yesterday;
       });
     },
   },

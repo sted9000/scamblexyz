@@ -42,6 +42,9 @@ module.exports = (sequelize) => {
       foreignKey: "dropId",
       otherKey: "batchId",
     });
+    Drop.belongsTo(models.Site, {
+      foreignKey: "siteId",
+    });
   };
 
   return Drop;

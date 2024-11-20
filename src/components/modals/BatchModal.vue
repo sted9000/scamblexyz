@@ -17,7 +17,7 @@
         <h2 class="text-2xl font-bold">Batch Details</h2>
       
       
-        <div class="text-md text-gray-700 mt-1">Site: {{ batchSiteName }}</div>
+        <div class="text-md text-gray-700 mt-1">Site: {{ batch.fullName }}</div>
         <div class="text-md text-gray-700 mt-1">Batch Id: {{ batch.id }}</div>
         <div class="text-md text-gray-700 mt-1">Date Sent: {{ new Date(batch.submissionDate).toLocaleDateString("en-US", {
               month: "2-digit",
@@ -79,16 +79,12 @@
 import { computed } from "vue";
 import { useModalStore } from "@/stores/modal";
 import { usePostcardStore } from "@/stores/postcard";
-import { sites as localSites } from "@/constants";
 import { TrashIcon } from "@heroicons/vue/24/outline";
 import { batchStatus } from "@/utils";
 
 const modalStore = useModalStore();
 const postcardStore = usePostcardStore();
 const batch = computed(() => postcardStore.getBatch);
-const batchSiteName = computed(() => {
-  return localSites[batch.value.siteId].fullName;
-});
 
 const editBatch = () => {
   modalStore.setOpenModal("updateBatch");

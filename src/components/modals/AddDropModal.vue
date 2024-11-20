@@ -7,7 +7,7 @@
       class="bg-white rounded-lg p-8 max-w-md w-full max-h-[90vh] overflow-y-auto"
     >
       <h2 class="text-2xl font-bold mb-4">Record Your Drop</h2>
-      <div class="text-md text-gray-700 mt-1">Site: {{ batchSiteName }}</div>
+      <div class="text-md text-gray-700 mt-1">Site: {{ batch.fullName }}</div>
         <div class="text-md text-gray-700 mt-1">Batch Id: {{ batch.id }}</div>
         <div class="text-md text-gray-700 mt-1">Date Sent: {{ new Date(batch.submissionDate).toLocaleDateString("en-US", {
               month: "2-digit",
@@ -111,7 +111,6 @@
 import { ref, computed } from "vue";
 import { useModalStore } from "@/stores/modal";
 import { usePostcardStore } from "@/stores/postcard";
-import { sites as localSites } from "@/constants";
 import { batchStatus } from "@/utils";
 const modalStore = useModalStore();
 const postcardStore = usePostcardStore();
@@ -119,9 +118,7 @@ const batch = computed(() => postcardStore.getBatch);
 const dateCredited = ref(new Date().toISOString().substr(0, 10));
 const cardCount = ref(1);
 const allowAnonymizedData = ref(true);
-const batchSiteName = computed(() => {
-  return localSites[batch.value.id].fullName;
-});
+
 
 const isCardCountValid = computed(() => {
   return cardCount.value > 0 && cardCount.value <= batch.value.pendingCards;

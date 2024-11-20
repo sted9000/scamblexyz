@@ -10,34 +10,16 @@
           ref="ticker"
           :style="{ animationDuration: `${duration}s` }"
         >
-          <div
-            v-for="(item, index) in leaderboard"
-            :key="`ticker1-${index}`"
-            :class="[
-              'text-gray-700',
-              'font-bold',
-              (index + 1) % 4 === 0 ? 'pr-12' : 'pr-4',
-            ]"
-          >
-            {{ item }}
-          </div>
+          <YesterdaysWinnersScrollingSection :yesterdaysWinners="yesterdaysWinners" />
+         
         </div>
+
         <div
           class="ticker flex whitespace-nowrap"
           ref="ticker2"
           :style="{ animationDuration: `${duration}s` }"
         >
-          <div
-            v-for="(item, index) in leaderboard"
-            :key="`ticker1-${index}`"
-            :class="[
-              'text-gray-700',
-              'font-bold',
-              (index + 1) % 4 === 0 ? 'pr-12' : 'pr-4',
-            ]"
-          >
-            {{ item }}
-          </div>
+          <YesterdaysWinnersScrollingSection :yesterdaysWinners="yesterdaysWinners" />
         </div>
       </div>
     </div>
@@ -58,37 +40,30 @@
 
 <script setup>
 import { ref, onMounted, nextTick, computed } from "vue";
+import YesterdaysWinnersScrollingSection from "./YesterdaysWinnersScrollingSection.vue";
 import { useRealtimeStore } from "../stores/realtime";
-
 const realtimeStore = useRealtimeStore();
-const bannerPlayers = computed(() => {
-  return realtimeStore.bannerPlayers;
-});
-const leaderboardString = (title, items) => {
-  let result = [title];
-  items.forEach((item) => {
-    let str = "";
-    str += `${item.username} (${item.score})`;
-    result.push(str);
-  });
-  return result;
-};
-const leaderboard = computed(() => {
-  if (!bannerPlayers.value) return ["Loading..."];
-  let formattedLeaderboard = [];
-  formattedLeaderboard.push(
-    ...leaderboardString("Yesterday's Winners: ", bannerPlayers.value["ALL_TIME"])
-  );
 
-  return formattedLeaderboard;
+
+
+const yesterdaysWinners = computed(() => {
+  // If all keys have truthy values, return the leaderboard
+  const winnersList = Object.values(realtimeStore.getYesterdaysLeaderboardWinners).filter(Boolean);
+  if (winnersList.length > 0) {
+    // List of key/value pairs
+    const winnersList = Object.entries(realtimeStore.getYesterdaysLeaderboardWinners)
+    return {title: "Yesterday's Winners: ", winners: winnersList}
+  } else {
+    return {title: "Loading...", winners: ["Loading..."]};
+  }
 });
 
-const speed = ref(20); // pixels per second
+// Scrolling settings
+const speed = ref(7); // pixels per second
 const container = ref(null);
 const ticker = ref(null);
 const ticker2 = ref(null);
 const duration = ref(0);
-
 const calculateDuration = async () => {
   console.log("Calculating duration");
   await nextTick();
@@ -101,10 +76,10 @@ const calculateDuration = async () => {
     console.log("Ticker or container not available");
   }
 };
-
 onMounted(async () => {
   await calculateDuration();
 });
+// END Scrolling settings
 </script>
 
 <style scoped>

@@ -23,7 +23,7 @@
     <div class="flex flex-1 overflow-hidden">
       <!-- Left Sidebar -->
       <nav class="w-56 text-gray-900 hidden md:block custom-scroll">
-        <NavMenu @itemSelected="handlePageChange" />
+        <NavMenu />
       </nav>
 
       <!-- Mobile Drawer -->
@@ -50,7 +50,7 @@
         >
           <div class="w-64 bg-gray-800 text-white h-full">
             <button @click="toggleDrawer" class="p-4">Close</button>
-            <NavMenu @itemSelected="handlePageChange" />
+            <NavMenu />
           </div>
         </div>
       </div>
@@ -104,28 +104,28 @@
       <RejectionModal v-if="rejectionModal" @close="handleCloseModal" />
       <BatchModal v-if="batchModal" @close="handleCloseModal" />
       <NewBonusModal v-if="newBonusModal" @close="handleCloseModal" />
+      <PostcardSiteModal v-if="postcardSiteModal" @close="handleCloseModal" />
+      <CheckinsHintModal v-if="checkinsHintModal" @close="handleCloseModal" />
+      <BonusesHintModal v-if="bonusesHintModal" @close="handleCloseModal" />
+      <PostcardsHintModal v-if="postcardsHintModal" @close="handleCloseModal" />
     </div>
   </div>
 
   <!-- Floating Action Buttons -->
-  <div class="fixed bottom-4 right-4 flex flex-col space-y-2">
+  <div class="fixed bottom-4 right-4 flex flex-row space-x-2">
     <button
       @click="modalStore.setOpenModal('newBonus')"
-      class="btn btn-circle btn-secondary"
+      class="btn btn-secondary flex items-center gap-2 px-4"
     >
-      <PlusIcon class="w-6 h-6" />
+      <span>New Bonus</span>
+      <PlusIcon class="w-5 h-5" />
     </button>
     <button
       @click="modalStore.setOpenModal('newBatch')"
-      class="btn btn-circle btn-accent"
+      class="btn btn-accent flex items-center gap-2 px-4"
     >
-      <EnvelopeIcon class="w-6 h-6" />
-    </button>
-    <button
-      @click="modalStore.setOpenModal('addDrop')"
-      class="btn btn-circle btn-accent"
-    >
-      <DownIcon class="w-6 h-6" />
+      <span class="text-white">Cards Sent</span>
+      <EnvelopeIcon class="w-5 h-5 text-white" />
     </button>
   </div>
 </template>
@@ -153,6 +153,11 @@ import BatchModal from "@/components/modals/BatchModal.vue";
 import EditProfileModal from "@/components/modals/EditProfileModal.vue";
 import NewBonusModal from "@/components/modals/NewBonusModal.vue";
 import RejectionModal from "@/components/modals/RejectionModal.vue";
+import PostcardSiteModal from "@/components/modals/PostcardSiteModal.vue";
+import CheckinsHintModal from "@/components/modals/CheckinsHintModal.vue";
+import BonusesHintModal from "@/components/modals/BonusesHintModal.vue";
+import PostcardsHintModal from "@/components/modals/PostcardsHintModal.vue";
+import { useUiStore } from "@/stores/ui";
 import { useModalStore } from "@/stores/modal";
 import { APP_NAME } from "@/constants";
 import { useAuthStore } from "@/stores/auth";
@@ -161,7 +166,6 @@ import { useRealtimeStore } from "@/stores/realtime";
 import {
   PlusIcon,
   EnvelopeIcon,
-  ChevronDownIcon as DownIcon,
   ArrowLeftEndOnRectangleIcon,
 } from "@heroicons/vue/24/outline";
 // New Stores
@@ -176,6 +180,7 @@ onMounted(() => {
 });
 
 const authStore = useAuthStore();
+const uiStore = useUiStore();
 const userIcon = computed(() => authStore.getUserIcon);
 const modalStore = useModalStore();
 const modalOpen = computed(() => modalStore.getModalOpen);
@@ -187,17 +192,16 @@ const batchModal = computed(() => modalStore.getBatchModal);
 const editProfileModal = computed(() => modalStore.getEditProfileModal);
 const newBonusModal = computed(() => modalStore.getNewBonusModal);
 const rejectionModal = computed(() => modalStore.getRejectionModal);
-
+const postcardSiteModal = computed(() => modalStore.getPostcardSiteModal);
+const checkinsHintModal = computed(() => modalStore.getCheckinsHintModal);
+const bonusesHintModal = computed(() => modalStore.getBonusesHintModal);
+const postcardsHintModal = computed(() => modalStore.getPostcardsHintModal);
 const isDrawerOpen = ref(false);
-const currentPage = ref("Home");
+const currentPage = computed(() => uiStore.getView);
 const toggleDrawer = () => (isDrawerOpen.value = !isDrawerOpen.value);
 
 const handleCloseModal = () => {
   modalStore.setCloseAllModals();
-};
-const handlePageChange = (page) => {
-  console.log(page);
-  currentPage.value = page;
 };
 </script>
 

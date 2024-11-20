@@ -9,6 +9,7 @@ export const useAuthStore = defineStore("auth", {
     token: null,
     user: null,
     isAuthenticated: false,
+    codeClient:null,
   }),
 
   getters: {
@@ -18,6 +19,19 @@ export const useAuthStore = defineStore("auth", {
   },
 
   actions: {
+    initializeGoogleSignIn() {
+      this.codeClient = window.google.accounts.oauth2.initCodeClient({
+        client_id:
+          "8603217298-qfgbrgiicgsv09qmknnfe9eir0sk2sqo.apps.googleusercontent.com",
+        scope:
+          "email profile openid https://www.googleapis.com/auth/userinfo.profile",
+        ux_mode: "redirect",
+        redirect_uri: "http://localhost:8080/auth/google/",
+      });
+    },
+    signIn() {
+      this.codeClient.requestCode();
+    },
     async handleAuthCode(code) {
       try {
         const response = await axios.post("http://localhost:3000/auth/google", {

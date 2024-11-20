@@ -106,17 +106,18 @@
   import { computed, ref } from "vue";
   import { useModalStore } from "@/stores/modal";
   import { usePostcardStore } from "@/stores/postcard";
-  import { sites as localSites } from "@/constants";
+  import { useUserStore } from "@/stores/user";
   
   const modalStore = useModalStore();
   const postcardStore = usePostcardStore();
+  const userStore = useUserStore();
   const batch = computed(() => postcardStore.getBatch);
   const selectedSite = ref(batch.value.siteId);
   const cardCount = ref(batch.value.totalCards);
   const dateSent = ref(new Date(batch.value.submissionDate).toISOString().split("T")[0]);
   const allowAnonymizedData = ref(batch.value.allowShare);
   const sites = computed(() => {
-    return Object.values(localSites).filter(site => site.isCard === true);
+    return userStore.getPostcardSites;
   });
   
   const submitPost = () => {

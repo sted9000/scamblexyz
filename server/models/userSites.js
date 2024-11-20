@@ -45,5 +45,9 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
 
+  UserSites.associate = (models) => {
+    UserSites.belongsTo(models.User, { foreignKey: "userId" });
+    UserSites.belongsTo(models.Site, { foreignKey: "siteId" });
+  };
   return UserSites;
 };

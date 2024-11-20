@@ -8,10 +8,7 @@ async function createCheckinsForUser(userId) {
       SiteId: site.id,
       lastVisit: null,
       currentStreak: 0,
-      longestStreak: 0,
-      enabled: true,
-      checkinType: "daily",
-      checkinTime: "00:00:00",
+      longestStreak: 0
     }));
 
     await Checkin.bulkCreate(checkins);

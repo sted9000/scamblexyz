@@ -1,12 +1,18 @@
-const { Drop, Batch, BatchDrop } = require("../models");
+const { Drop, Batch, BatchDrop, Site } = require("../models");
 const {postcardQueue} = require("../queues/postcardQueue");
+const {leaderboardQueue} = require("../queues/leaderboardQueue");
 
 const postcardController = {
   /* Get Community Drops */
   async getDrops(req, res) {
     // query all the drops
     try {
-      const drops = await Drop.findAll();
+      const drops = await Drop.findAll({
+        include: [{
+          model: Site,
+          attributes: ["imagePath", "fullName", "isPostcard"],
+        }]
+      });
       res.json(drops);
     } catch (error) {
       console.error("Error fetching drops:", error);
@@ -47,6 +53,10 @@ const postcardController = {
             through: {
               attributes: ["cardsProcessed", "dropType"],
             },
+          },
+          {
+            model: Site,
+            attributes: ["imagePath", "fullName", "isPostcard"],
           },
         ],
       });
@@ -124,6 +134,10 @@ const postcardController = {
               attributes: ["cardsProcessed"],
             },
           },
+          {
+            model: Site,
+            attributes: ["imagePath", "fullName", "isPostcard"],
+          },
         ],
         order: [["submissionDate", "DESC"]], // Optional: order by submission date
       });
@@ -144,7 +158,25 @@ const postcardController = {
         pendingCards: req.body.totalCards,
         userId: req.user.userId,
       });
-      res.json(batch);
+
+      const batchWithSite = await Batch.findByPk(batch.id, {
+        include: [{
+          model: Site,
+          attributes: ["imagePath", "fullName", "isPostcard"],
+        }]
+      });
+
+      // Update the leaderboard
+      leaderboardQueue.add({
+        userId: req.user.userId,
+        username: req.user.username,
+        userIcon: req.user.userIcon,
+        createdAt: req.user.createdAt,
+        category: "postcard",
+        value: batch.totalCards,
+      });
+
+      res.json(batchWithSite);
     } catch (error) {
       console.error("Error creating batch:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -169,12 +201,43 @@ const postcardController = {
               attributes: ["cardsProcessed", "dropType"],
             },
           },
+          {
+            model: Site,
+            attributes: ["imagePath", "fullName", "isPostcard"],
+          },
         ],
       });
       
       res.json(updatedBatch);
     } catch (error) {
       console.error("Error updating batch:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  },
+
+  /* Get a site */
+  async getSite(req, res) {
+    try {
+      const site = await Site.findByPk(req.params.siteId, {
+        include: [{
+          model: Drop,
+          attributes: ['id', 'dropDate', 'cardsProcessed', 'source'],
+          include: [{
+            model: Batch,
+            through: BatchDrop,
+            attributes: ['submissionDate']
+          }],
+          order: [['dropDate', 'DESC']]
+        }]
+      });
+
+      if (!site) {
+        return res.status(404).json({ message: "Site not found" });
+      }
+
+      res.json(site);
+    } catch (error) {
+      console.error("Error fetching site with drops:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   },

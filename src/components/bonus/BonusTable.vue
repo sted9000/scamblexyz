@@ -1,17 +1,10 @@
 <script setup>
 import { computed } from "vue";
-import { sites as localSites } from "@/constants";
 import { useBonusStore } from "@/stores/bonus";
 import SectionHeader from "@/components/headers/SectionHeader.vue";
 import { CreditCardIcon, TrashIcon } from "@heroicons/vue/24/outline";
 const bonusStore = useBonusStore();
-const userBonuses = computed(() => bonusStore.getUserBonus);
-const siteImage = (siteId) => {
-  return localSites[siteId].imagePath;
-};
-const siteName = (siteId) => {
-  return localSites[siteId].fullName;
-};
+const userBonuses = computed(() => bonusStore.getBonuses);
 const formatBonusType = (type) => {
   switch (type) {
     case 'deposit':
@@ -49,18 +42,18 @@ const deleteBonus = (id) => {
             <div class="flex space-x-3 items-center">
               <div class="avatar">
                 <div class="mask mask-squircle w-4 h-4">
-                  <img :src="siteImage(bonus.Bonus.siteId)" :alt="siteName(bonus.Bonus.siteId)" />
+                  <img :src="bonus.imagePath" :alt="bonus.fullName" />
                 </div>
               </div>
               <div>
-                <div class="font-bold">{{ siteName(bonus.Bonus.siteId) }}</div>
+                <div class="font-bold">{{ bonus.fullName }}</div>
               </div>
             </div>
           </td>
-          <td>${{ bonus.Bonus.amount }}</td>
-          <td>${{ bonus.Bonus.bonusAmount }}</td>
-          <td>{{ formatBonusType(bonus.Bonus.bonusType) }}</td>
-          <td>{{ new Date(bonus.Bonus.createdAt).toLocaleDateString() }}</td>
+          <td>${{ bonus.amount }}</td>
+          <td>${{ bonus.bonusAmount }}</td>
+          <td>{{ formatBonusType(bonus.bonusType) }}</td>
+          <td>{{ new Date(bonus.createdAt).toLocaleDateString() }}</td>
           <!-- Delete button (trash icon)-->
           <td>
             <TrashIcon @click="deleteBonus(bonus.id)" class="h-4 w-4 text-gray-500" />

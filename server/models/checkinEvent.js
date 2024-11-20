@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        isIn: [["daily", "hourly"]],
+        isIn: [["DAILY", "HOURLY", "24_HOUR"]], // isIn validator requires an array of arrays
       },
     },
     streakCount: {

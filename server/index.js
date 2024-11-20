@@ -6,7 +6,8 @@ const { syncDatabase } = require("./models");
 const { initializeSocket } = require('./config/socket');
 const { initializeLeaderboards } = require('./services/leaderboardService');
 const { redisClient } = require('./config/redis');
-
+const { dailyPostcardSiteRatingsUpdate } = require('./services/postcardService');
+const { dailyRedisLeaderboardsUpdate, weeklyRedisLeaderboardsUpdate } = require('./services/leaderboardService');
 const {
   authRoutes,
   checkinRoutes,
@@ -22,9 +23,14 @@ const app = express();
 app.use(express.json());
 app.use(cors({ origin: "http://localhost:8080", credentials: true }));
 
+// Start scheduled tasks
+dailyPostcardSiteRatingsUpdate();
+dailyRedisLeaderboardsUpdate();
+weeklyRedisLeaderboardsUpdate();
+
 /* Socketio Setup */
 const server = http.createServer(app);
-initializeSocket(server);  // Initialize Socket.IO
+initializeSocket(server);
 
 /* Routes */
 app.use("/auth", authRoutes);

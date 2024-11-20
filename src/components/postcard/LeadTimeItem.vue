@@ -7,53 +7,72 @@
       <div class="flex justify-between items-start">
         <div class="flex mb-2">
           <img
-            :src="siteLogo"
+            :src="item.imagePath"
             alt="Item image"
             class="w-10 h-10 rounded-full mr-6"
           />
-          <CheckIcon
-            v-for="i in siteCardRank"
-            :key="i"
-            class="h-5 w-5 text-yellow-500"
-          />
         </div>
-        <div class="text-xs text-white bg-secondary rounded-md px-2 py-1 h-fit">
-          Dropped Today!
+        <div v-if="false" class="badge text-xs">
+          Last Drop September 22th
         </div>
       </div>
       <div class="text-2xl font-bold text-gray-700 mr-2">
-          {{ siteName }}
-        </div>
+          {{ item.fullName }}
+      </div>
+      <div class="text-sm text-gray-500">Last Drop: September 22th</div>
       </div>
       
   
 
       
         
-<div class="flex flex-col">
-        <div class="flex items-center">
-          <CurrencyDollarIcon v-for="i in cardValue" :key="i" class="h-4 w-4 text-yellow-500 mr-1" />
+  <div class="flex flex-col mt-4">
+        <div class="flex items-center mb-2">
+          <div class="text-sm text-gray-500 mr-1">Value: </div>
+          <CurrencyDollarIcon v-for="i in siteValues.postcardValue" :key="i" class="h-4 w-4 text-yellow-500 mr-1" />
         </div>
-        <div class="text-sm font-bold text-gray-700">
-          6 Week Lead Time
+        <div class="flex items-center mb-2">
+          <div class="text-sm text-gray-500 mr-1">Lead Time: </div>
+          <template v-if="siteValues.postcardLeadTime > 5">
+            <CalendarIcon v-for="i in 5" :key="i" class="h-4 w-4 text-yellow-500 mr-1" />
+            <span class="text-sm text-yellow-500">+{{ siteValues.postcardLeadTime - 5 }}</span>
+          </template>
+          <template v-else>
+            <CalendarIcon v-for="i in siteValues.postcardLeadTime" :key="i" class="h-4 w-4 text-yellow-500 mr-1" />
+          </template>
+        </div>
+        <div class="flex items-center mb-2">
+          <div class="text-sm text-gray-500 mr-1">Consistancy: </div>
+          <StarIcon v-for="i in siteValues.postcardConsistancy" :key="i" class="h-4 w-4 text-yellow-500 mr-1" />
+        </div>
+        <div class="flex items-center mb-2">
+          <div class="text-sm text-gray-500 mr-1">Popularity: </div>
+          <HandThumbUpIcon v-for="i in siteValues.postcardPopularity" :key="i" class="h-4 w-4 text-yellow-500 mr-1" />
         </div>
         <!-- <div class="divider my-2"></div> -->
-        <div class="btn bg-white text-gray-500 text-center mt-4">
-          More Info
+        <div class="flex justify-end mt-2">
+          <button @click="openSiteModal" class="btn btn-sm bg-white text-gray-500">More Details</button>
         </div>
       </div>
     
   </div>
+  
 </template>
 
 <script setup>
 import { defineProps, computed } from "vue";
-import { sites as localSites } from "@/constants";
-import { CheckIcon, CurrencyDollarIcon } from "@heroicons/vue/24/outline";
+import { useModalStore } from "@/stores/modal";
+import { usePostcardStore } from "@/stores/postcard";
+import { CalendarIcon, StarIcon, CurrencyDollarIcon, HandThumbUpIcon } from "@heroicons/vue/20/solid";
+import { postcardSiteValues } from "@/utils";
 const props = defineProps(["item"]);
-const siteName = localSites[props.item.id].fullName;
-const siteLogo = localSites[props.item.id].imagePath;
-const siteCardRank = computed(() => props.item.cardRanking);
-const cardValue = 4;
+const siteValues = computed(() => postcardSiteValues(props.item.Site));
+
+const modalStore = useModalStore();
+const postcardStore = usePostcardStore();
+const openSiteModal = () => {
+  postcardStore.fetchPostcardSite(props.item.siteId);
+  modalStore.setOpenModal("postcardSite");
+};
 </script>
 ```

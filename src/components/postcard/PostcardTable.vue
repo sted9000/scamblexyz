@@ -2,7 +2,6 @@
 import { computed } from "vue";
 import { usePostcardStore } from "@/stores/postcard";
 import { useModalStore } from "@/stores/modal";
-import { sites as localSites } from "@/constants";
 import SectionHeader from "@/components/headers/SectionHeader.vue";
 import {
   CreditCardIcon,
@@ -14,8 +13,6 @@ import {
 const postcardStore = usePostcardStore();
 const modalStore = useModalStore();
 const batches = computed(() => postcardStore.getUserBatches);
-const batchSiteLogo = (siteId) => localSites[siteId].imagePath;
-const batchSiteName = (siteId) => localSites[siteId].fullName;
 const batchStatus = (batch) => {
   // If batch.pendingCards is 0, then all cards have been sent and status is complete
   if (batch.pendingCards === 0) {
@@ -39,14 +36,17 @@ const handleBatchModal = (batchId) => {
 </script>
 
 <template>
-  <SectionHeader title="Postcard History" :icon="CreditCardIcon" />
+  <SectionHeader title="My Postcard History" :icon="CreditCardIcon" />
   <div class="flex justify-center mb-8">
     <table class="table table-sm custom-zebra table-no-dividers mx-4">
       <thead class="">
         <tr>
           <th>Site</th>
           <th>Batch Size</th>
+          <th>Credited</th>
           <th>Date Sent</th>
+          <th>Estimated Drop</th>
+
           <th>Status</th>
           <th>{{ " " }}</th>
         </tr>
@@ -58,19 +58,19 @@ const handleBatchModal = (batchId) => {
               <div class="avatar">
                 <div class="mask mask-squircle w-4 h-4">
                   <img
-                    :src="batchSiteLogo(batch.siteId)"
-                    :alt="batchSiteName(batch.siteId)"
+                    :src="batch.imagePath"
+                    :alt="batch.fullName"
                   />
                 </div>
               </div>
               <div>
-                <div class="font-bold">{{ batchSiteName(batch.siteId) }}</div>
+                <div class="font-bold">{{ batch.fullName }}</div>
               </div>
             </div>
-
-
          </td>
           <td>{{ batch.totalCards }}</td>
+          <td>{{ batch.creditedCards }}</td>
+          <td>{{ new Date(batch.submissionDate).toLocaleDateString() }}</td>
           <td>{{ new Date(batch.submissionDate).toLocaleDateString() }}</td>
           <td>{{ batchStatus(batch) }}</td>
           <td>

@@ -17,17 +17,17 @@
           <div class="flex flex-wrap -mx-1">
             <label
               v-for="site in sites"
-              :key="site.id"
+              :key="site.siteId"
               :class="[
                 'flex items-center px-3 py-1 rounded border text-sm cursor-pointer transition-colors duration-200 m-1',
-                selectedSite === site.id
+                selectedSite === site.siteId
                   ? 'bg-blue-500 text-white'
                   : 'bg-white text-gray-700 hover:bg-gray-100',
               ]"
             >
               <input
                 type="radio"
-                :value="site.id"
+                :value="site.siteId"
                 v-model="selectedSite"
                 class="hidden"
                 required
@@ -145,10 +145,11 @@
 <script setup>
 import { ref } from "vue";
 import { useModalStore } from "@/stores/modal";
-import { sites as localSites } from "@/constants";
+import { useUserStore } from "@/stores/user";
 import { useBonusStore } from "@/stores/bonus";
 
 const modalStore = useModalStore();
+const userStore = useUserStore();
 const bonusStore = useBonusStore();
 
 const selectedSite = ref(null);
@@ -156,7 +157,7 @@ const amount = ref(0);
 const bonusAmount = ref(0);
 const selectedBonusType = ref("deposit");
 const selectedClaimLimit = ref("1");
-const sites = Object.values(localSites);
+const sites = userStore.getEnabledSites;
 const allowAnonymizedData = ref(true);
 
 const closeModal = () => {

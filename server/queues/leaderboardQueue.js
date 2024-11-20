@@ -13,6 +13,8 @@ leaderboardQueue.process(async (job) => {
       const { userId, username, userIcon, createdAt, category, value } = job.data;
       const key = `${userId}:${username}:${userIcon}:${new Date(createdAt).toISOString()}`;
 
+      console.log("leaderboardQueue", job.data, key);
+
       // Update leaderboards and get user stats as before
       await updateCategoryLeaderboard(redisClient, category, key, value);
       await updateCategoryLeaderboard(redisClient, 'overall', key, value);
