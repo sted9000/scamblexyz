@@ -35,6 +35,12 @@ export const useAuthStore = defineStore("auth", {
     },
     async handleAuthCode(code) {
       try {
+        const response = await axios.get(`${API_URL}/`);
+        console.log("Response from root endpoint", response.data);
+      } catch (error) {
+        console.error("Error fetching root endpoint", error); 
+      }
+      try {
         const response = await axios.post(`${API_URL}/auth/google`, {
           code,
         });
