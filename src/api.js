@@ -7,6 +7,8 @@ const api = axios.create({
   baseURL: VITE_API_URL,
 });
 
+const test = 'test'
+
 // Request interceptor
 api.interceptors.request.use((config) => {
   const authStore = useAuthStore();
