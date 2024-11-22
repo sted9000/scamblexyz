@@ -30,6 +30,7 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true // If you need to send cookies or authentication headers
 };
+
 app.use(cors(corsOptions));
 
 // Start scheduled tasks
