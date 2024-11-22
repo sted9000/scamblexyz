@@ -37,6 +37,7 @@ export const useAuthStore = defineStore("auth", {
       try {
         const response = await axios.get(`${API_URL}/`);
         console.log("Response from root endpoint", response.data);
+        
       } catch (error) {
         console.error("Error fetching root endpoint", error); 
       }
