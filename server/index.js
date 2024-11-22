@@ -23,7 +23,7 @@ const app = express();
 app.use(express.json());
 
 // Cors setup
-const allowedOrigin = '*';
+const allowedOrigin = 'https://scamble.xyz';
 const corsOptions = {
   origin: allowedOrigin,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
