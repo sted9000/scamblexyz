@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col min-h-screen bg-white">
+  <!-- <div class="flex flex-col min-h-screen bg-white"> -->
     <!-- <HeaderComponent /> -->
-    <main class="flex-grow flex items-center justify-center">
+    <!-- <main class="flex-grow flex items-center justify-center">
       <div
         v-if="isLoading"
         class="w-full h-full flex items-center justify-center"
@@ -14,20 +14,21 @@
         <router-view></router-view>
       </div>
     </main>
-  </div>
+  </div> -->
+  <div>testing</div>
 </template>
 
 <script setup>
-import { computed, onMounted } from "vue";
-import { useUserStore } from "@/stores/user";
-const userStore = useUserStore();
-const isLoading = computed(
-  () => userStore.getIsLoading || userStore.getIsLoggingOut
-);
-import { useAuthStore } from "@/stores/auth";
-const authStore = useAuthStore();
+// import { computed, onMounted } from "vue";
+// import { useUserStore } from "@/stores/user";
+// const userStore = useUserStore();
+// const isLoading = computed(
+//   () => userStore.getIsLoading || userStore.getIsLoggingOut
+// );
+// import { useAuthStore } from "@/stores/auth";
+// const authStore = useAuthStore();
 
-onMounted(() => {
-  authStore.initializeGoogleSignIn();
-});
+// onMounted(() => {
+//   authStore.initializeGoogleSignIn();
+// });
 </script>

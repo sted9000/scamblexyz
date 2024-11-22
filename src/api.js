@@ -1,9 +1,10 @@
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
+import { VITE_API_URL } from "@/env";
 
 const api = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: VITE_API_URL,
 });
 
 // Request interceptor

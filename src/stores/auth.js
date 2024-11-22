@@ -3,7 +3,7 @@ import axios from "axios";
 import router from "@/router";
 import {jwtDecode} from "jwt-decode";
 import api from "@/api";
-
+const VITE_API_URL = import.meta.env.VITE_API_URL;
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     token: null,
@@ -26,7 +26,8 @@ export const useAuthStore = defineStore("auth", {
         scope:
           "email profile openid https://www.googleapis.com/auth/userinfo.profile",
         ux_mode: "redirect",
-        redirect_uri: "http://localhost:8080/auth/google/",
+        // redirect_uri: "http://localhost:8080/auth/google/",
+        redirect_uri: "https://scamblexyz.vercel.app/auth/google/",
       });
     },
     signIn() {
@@ -34,7 +35,7 @@ export const useAuthStore = defineStore("auth", {
     },
     async handleAuthCode(code) {
       try {
-        const response = await axios.post("http://localhost:3000/auth/google", {
+        const response = await axios.post(`${VITE_API_URL}/auth/google`, {
           code,
         });
         console.log("Response from auth endpoint", response.data);
