@@ -3,8 +3,8 @@ import axios from "axios";
 import router from "@/router";
 import {jwtDecode} from "jwt-decode";
 import api from "@/api";
-// const VITE_API_URL = import.meta.env.VITE_API_URL;
-const API_URL = process.env.VUE_APP_API_KEY
+const API_URL = process.env.VUE_APP_API_URL
+const SITE_URL = process.env.VUE_APP_SITE_URL
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     token: null,
@@ -28,7 +28,7 @@ export const useAuthStore = defineStore("auth", {
           "email profile openid https://www.googleapis.com/auth/userinfo.profile",
         ux_mode: "redirect",
         // redirect_uri: "http://localhost:8080/auth/google/",
-        redirect_uri: "https://scamblexyz.vercel.app/auth/google/",
+        redirect_uri: `${SITE_URL}/auth/google/`,
       });
     },
     signIn() {
