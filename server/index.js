@@ -21,7 +21,16 @@ dotenv.config();
 const port = process.env.PORT || 3000;
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: "http://localhost:8080", credentials: true }));
+
+// Cors setup
+const allowedOrigin = 'https://scamble.xyz';
+const corsOptions = {
+  origin: allowedOrigin,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true // If you need to send cookies or authentication headers
+};
+app.use(cors(corsOptions));
 
 // Start scheduled tasks
 dailyPostcardSiteRatingsUpdate();

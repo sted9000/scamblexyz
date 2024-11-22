@@ -27,7 +27,6 @@ export const useAuthStore = defineStore("auth", {
         scope:
           "email profile openid https://www.googleapis.com/auth/userinfo.profile",
         ux_mode: "redirect",
-        // redirect_uri: "http://localhost:8080/auth/google/",
         redirect_uri: `${SITE_URL}/auth/google/`,
       });
     },
