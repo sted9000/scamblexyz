@@ -3,7 +3,8 @@ import axios from "axios";
 import router from "@/router";
 import {jwtDecode} from "jwt-decode";
 import api from "@/api";
-const VITE_API_URL = import.meta.env.VITE_API_URL;
+// const VITE_API_URL = import.meta.env.VITE_API_URL;
+const API_URL = process.env.VUE_APP_API_KEY
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     token: null,
@@ -35,7 +36,7 @@ export const useAuthStore = defineStore("auth", {
     },
     async handleAuthCode(code) {
       try {
-        const response = await axios.post(`${VITE_API_URL}/auth/google`, {
+        const response = await axios.post(`${API_URL}/auth/google`, {
           code,
         });
         console.log("Response from auth endpoint", response.data);
