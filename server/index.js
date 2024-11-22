@@ -47,6 +47,9 @@ app.use("/user", userRoutes);
 app.use("/checkin", checkinRoutes);
 app.use("/bonus", bonusRoutes);
 app.use("/postcard", postcardRoutes);
+app.use("/", (req, res) => {
+  res.send("Hello World");
+});
 
 /* Start Server (and sync database) */
 async function startServer() {
