@@ -39,7 +39,7 @@ weeklyRedisLeaderboardsUpdate();
 
 /* Socketio Setup */
 const server = http.createServer(app);
-initializeSocket(server);
+initializeSocket(server, corsOptions);
 
 /* Routes */
 app.use("/auth", authRoutes);

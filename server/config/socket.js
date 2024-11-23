@@ -5,13 +5,36 @@ const moment = require('moment');
 const { CommunityBonus, Site } = require('../models');
 let ioInstance = null;
 
-function initializeSocket(server) {
+function initializeSocket(server, corsOptions) {
   const { Server } = require("socket.io");
-  const io = new Server(server, {});
+  const io = new Server(server, { 
+    cors: corsOptions, // Add some recommended Socket.IO-specific settings
+    pingTimeout: 60000, // How long to wait before considering connection closed
+    pingInterval: 25000, // How often to ping the client
+    transports: ['websocket', 'polling'], // Prefer WebSocket, fallback to polling
+    allowEIO3: true // Enable Engine.IO v3 transport
+  });
   ioInstance = io;
+
+  io.engine.on("connection_error", (err) => {
+    console.log('Socket.IO connection error:', err);
+  }); 
 
   io.on('connection', async (socket) => {
     console.log('Socket.IO client connected.');
+
+    // // Add error handling for individual sockets
+    // socket.on('error', (error) => {
+    //   console.error('Socket error:', error);
+    // });
+
+    // // Add authentication check if needed
+    // const userId = socket.handshake.query.userId;
+    // if (!userId) {
+    //   console.log('Connection rejected - no userId provided');
+    //   socket.disconnect(true);
+    //   return;
+    // }
 
     /*** Setup the user's room to listen for personal updates ***/
     const userId = socket.handshake.query.userId;

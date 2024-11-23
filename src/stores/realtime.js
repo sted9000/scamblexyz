@@ -2,6 +2,7 @@
 import { flattenSite } from "@/utils";
 import { defineStore } from "pinia";
 import { io } from "socket.io-client";
+const API_URL = process.env.VUE_APP_API_URL
 
 export const useRealtimeStore = defineStore("realtime", {
   state: () => ({
@@ -187,10 +188,15 @@ export const useRealtimeStore = defineStore("realtime", {
     initializeSocket() {
       const user = JSON.parse(localStorage.getItem("user"));
       const userId = user.userId
-      this.socket = io("http://localhost:3000", {
-        transports: ["websocket", "polling"],
+      this.socket = io(API_URL, {
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        reconnectionDelayMax: 5000,
+        timeout: 20000,
+        transports: ['websocket', 'polling'],
         query: { userId: userId },
-      });
+      });      
 
       this.socket.on("connect", () => {
         this.isConnected = true;
