@@ -15,7 +15,7 @@ router.post("/google", async (req, res) => {
   const oAuth2Client = new OAuth2Client({
     clientId: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUri: "https://scamble.xyz/auth/google/",
+    redirectUri: "https://www.scamble.xyz/auth/google/",
   });
 
   try {
